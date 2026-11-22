@@ -1,8 +1,103 @@
 {
  "bron": "https://opendata.rijksoverheid.nl/v1/infotypes/schoolholidays",
  "licentie": "CC0 1.0",
- "opgehaald": "2026-11-20",
+ "opgehaald": "2026-11-22",
  "schooljaren": [
+  {
+   "schooljaar": "2024-2025",
+   "vakanties": [
+    {
+     "type": "Herfstvakantie",
+     "verplicht": false,
+     "regios": {
+      "noord": {
+       "start": "2024-10-26",
+       "eind": "2024-11-03"
+      },
+      "midden": {
+       "start": "2024-10-26",
+       "eind": "2024-11-03"
+      },
+      "zuid": {
+       "start": "2024-10-19",
+       "eind": "2024-10-27"
+      }
+     }
+    },
+    {
+     "type": "Kerstvakantie",
+     "verplicht": true,
+     "regios": {
+      "noord": {
+       "start": "2024-12-21",
+       "eind": "2025-01-05"
+      },
+      "midden": {
+       "start": "2024-12-21",
+       "eind": "2025-01-05"
+      },
+      "zuid": {
+       "start": "2024-12-21",
+       "eind": "2025-01-05"
+      }
+     }
+    },
+    {
+     "type": "Voorjaarsvakantie",
+     "verplicht": false,
+     "regios": {
+      "noord": {
+       "start": "2025-02-15",
+       "eind": "2025-02-23"
+      },
+      "midden": {
+       "start": "2025-02-22",
+       "eind": "2025-03-02"
+      },
+      "zuid": {
+       "start": "2025-02-22",
+       "eind": "2025-03-02"
+      }
+     }
+    },
+    {
+     "type": "Meivakantie",
+     "verplicht": true,
+     "regios": {
+      "noord": {
+       "start": "2025-04-26",
+       "eind": "2025-05-04"
+      },
+      "midden": {
+       "start": "2025-04-26",
+       "eind": "2025-05-04"
+      },
+      "zuid": {
+       "start": "2025-04-26",
+       "eind": "2025-05-04"
+      }
+     }
+    },
+    {
+     "type": "Zomervakantie",
+     "verplicht": true,
+     "regios": {
+      "noord": {
+       "start": "2025-07-12",
+       "eind": "2025-08-24"
+      },
+      "midden": {
+       "start": "2025-07-19",
+       "eind": "2025-08-31"
+      },
+      "zuid": {
+       "start": "2025-07-05",
+       "eind": "2025-08-17"
+      }
+     }
+    }
+   ]
+  },
   {
    "schooljaar": "2025-2026",
    "vakanties": [
