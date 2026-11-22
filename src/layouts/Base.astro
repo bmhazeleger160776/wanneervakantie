@@ -1,0 +1,172 @@
+---
+import { SITE } from "../lib/site.js";
+import { KALENDERJAREN } from "../lib/vakanties.js";
+import { vandaag } from "../lib/datum.js";
+const { title, description, canonical, jsonLd = [], kruimels = [] } = Astro.props;
+const site = SITE.url;
+const url = canonical ? site + canonical : undefined;
+const nu = vandaag();
+const ditJaar = Number(nu.slice(0, 4));
+// Het "hoofdjaar" in menu en footer: na de zomer schuift de interesse naar volgend jaar
+const hoofdJaar = KALENDERJAREN.includes(nu.slice(5, 7) >= "09" ? ditJaar + 1 : ditJaar) ? (nu.slice(5, 7) >= "09" ? ditJaar + 1 : ditJaar) : KALENDERJAREN.at(-1);
+const schooljaarNu = nu.slice(5, 7) >= "08" ? `${ditJaar}-${ditJaar + 1}` : `${ditJaar - 1}-${ditJaar}`;
+const breadcrumbLd = kruimels.length
+  ? [{ "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ naam: "Home", url: "/" }, ...kruimels].map((k, i) => ({ "@type": "ListItem", position: i + 1, name: k.naam, ...(k.url ? { item: site + k.url } : {}) })) }]
+  : [];
+const alleLd = [...jsonLd, ...breadcrumbLd];
+---
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {url && <link rel="canonical" href={url} />}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    {url && <meta property="og:url" content={url} />}
+    <meta property="og:locale" content="nl_NL" />
+    <meta property="og:site_name" content={SITE.domein} />
+    <meta property="og:image" content={`${site}/og.png`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    {SITE.umamiId && <script is:inline defer src="https://cloud.umami.is/script.js" data-website-id={SITE.umamiId} data-domains={SITE.domein}></script>}
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#d9480f" />
+    {alleLd.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj)} />)}
+    <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin />
+    <style is:global>
+      @font-face { font-family: "Inter"; src: url(/fonts/inter.woff2) format("woff2"); font-weight: 100 900; font-display: swap; }
+      @font-face { font-family: "Space Grotesk"; src: url(/fonts/space-grotesk-700.woff2) format("woff2"); font-weight: 600 700; font-display: swap; }
+      :root {
+        --ink: #1d1a17; --muted: #6b6259; --line: #ece4dc; --bg: #fbf8f4; --card: #fff;
+        --accent: #d9480f; --accent-dark: #a6360a; --accent-soft: #fff0e6; --sun: #ffc94a;
+        --noord: #1f6fb2; --midden: #2b8a3e; --zuid: #c2410c;
+        --radius: 14px; --kop: "Space Grotesk", "Inter", system-ui, sans-serif;
+        font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: var(--bg);
+        font-feature-settings: "tnum" 1, "cv11" 1;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; line-height: 1.55; }
+      a { color: var(--accent-dark); text-underline-offset: 2px; }
+      a:hover { color: var(--accent); }
+      .wrap { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+      h1, h2, h3 { font-family: var(--kop); letter-spacing: -.01em; }
+      h1 { font-size: clamp(1.75rem, 5vw, 2.4rem); line-height: 1.1; margin: 22px 0 10px; }
+      h2 { font-size: 1.3rem; line-height: 1.25; margin: 40px 0 12px; }
+      h3 { font-size: 1.05rem; margin: 22px 0 8px; }
+      .intro { font-size: 1.08rem; max-width: 680px; }
+      .muted { color: var(--muted); }
+      .klein { font-size: .85rem; }
+      .kaartblok { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; }
+      .let-op { background: #fff8e1; border: 1px solid #f3dc9b; border-radius: var(--radius); padding: 12px 16px; font-size: .95rem; }
+      .kruimel { font-size: .85rem; margin-top: 18px; color: var(--muted); }
+      .kruimel a { color: var(--muted); }
+      .tabelwrap { overflow-x: auto; }
+      table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; font-variant-numeric: tabular-nums; }
+      th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+      th { font-size: .8rem; font-weight: 600; color: var(--muted); background: #fdfaf6; white-space: nowrap; }
+      tr:last-child td { border-bottom: 0; }
+      td.nw, th.nw { white-space: nowrap; }
+      tr.nu td { background: var(--accent-soft); }
+      @media (max-width: 560px) { th, td { padding: 9px 8px; font-size: .9rem; } th:first-child, td:first-child { padding-left: 12px; } }
+      details { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; }
+      summary { cursor: pointer; font-weight: 600; }
+      details p { margin: 8px 0 2px; }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
+      .chips a { display: inline-block; padding: 8px 14px; background: var(--card); border: 1px solid var(--line); border-radius: 999px; text-decoration: none; font-weight: 500; color: var(--ink); }
+      .chips a:hover { border-color: var(--accent); color: var(--accent-dark); }
+      .tegels { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+      .tegels a { display: flex; flex-direction: column; gap: 4px; height: 100%; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; text-decoration: none; color: var(--ink); }
+      .tegels a:hover { border-color: var(--accent); color: var(--ink); }
+      .tegels strong { font-family: var(--kop); font-size: 1.08rem; }
+      .tegels .muted { font-size: .9rem; }
+      .tegels .verder { margin-top: auto; padding-top: 6px; color: var(--accent-dark); font-weight: 600; font-size: .88rem; }
+      .regio { display: inline-block; font-size: .78rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; color: #fff; white-space: nowrap; }
+      .regio.noord { background: var(--noord); } .regio.midden { background: var(--midden); } .regio.zuid { background: var(--zuid); } .regio.heel { background: var(--ink); }
+      .meer { margin-top: 14px; font-weight: 600; }
+      .knop { display: inline-block; background: var(--accent); color: #fff; padding: 11px 18px; border-radius: 10px; text-decoration: none; font-weight: 600; border: 0; font: inherit; cursor: pointer; }
+      .knop:hover { background: var(--accent-dark); color: #fff; }
+      .bron { margin-top: 28px; }
+
+      header.site { background: var(--card); border-bottom: 1px solid var(--line); position: relative; z-index: 5; }
+      header.site .wrap { display: flex; align-items: center; justify-content: space-between; min-height: 60px; gap: 16px; }
+      .logo { display: flex; align-items: center; gap: 9px; text-decoration: none; color: var(--ink); font-family: var(--kop); font-weight: 700; font-size: 1.15rem; }
+      .logo span span { color: var(--accent); }
+      .logo:hover { color: var(--ink); }
+      nav.hoofd ul { display: flex; gap: 2px; list-style: none; margin: 0; padding: 0; }
+      nav.hoofd a { display: block; padding: 10px 11px; border-radius: 10px; text-decoration: none; color: var(--ink); font-weight: 500; font-size: .94rem; }
+      nav.hoofd a:hover { background: var(--accent-soft); color: var(--accent-dark); }
+      details.menu { display: none; background: none; border: 0; padding: 0; margin: 0; border-radius: 0; }
+      @media (max-width: 760px) {
+        nav.hoofd { display: none; }
+        details.menu { display: block; }
+        details.menu summary { list-style: none; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 10px; }
+        details.menu summary::-webkit-details-marker { display: none; }
+        details.menu[open] summary { background: var(--accent-soft); }
+        details.menu ul { position: absolute; left: 0; right: 0; top: 60px; margin: 0; padding: 8px 12px 14px; list-style: none; background: var(--card); border-bottom: 1px solid var(--line); box-shadow: 0 10px 24px rgba(29,26,23,.08); }
+        details.menu a { display: block; padding: 12px 8px; text-decoration: none; color: var(--ink); font-weight: 600; border-bottom: 1px solid var(--line); }
+        details.menu li:last-child a { border-bottom: 0; }
+      }
+      footer.site { margin-top: 64px; padding: 36px 0 44px; background: var(--card); border-top: 1px solid var(--line); color: var(--muted); font-size: .9rem; }
+      footer.site .kolommen { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 20px 40px; }
+      footer.site .disclaimer { max-width: 420px; margin: 0; }
+      footer.site ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, auto)); gap: 6px 28px; }
+      footer.site a { color: var(--ink); text-decoration: none; font-weight: 500; }
+      footer.site a:hover { color: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <header class="site"><div class="wrap">
+      <a class="logo" href="/" aria-label={`${SITE.domein}, naar de homepage`}>
+        <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#d9480f"/><circle cx="16" cy="17" r="6" fill="#ffc94a"/><path d="M16 6.5v2.6M16 24.9v2.6M5.5 17h2.6M23.9 17h2.6M8.6 9.6l1.8 1.8M21.6 22.6l1.8 1.8M8.6 24.4l1.8-1.8M21.6 11.4l1.8-1.8" stroke="#ffc94a" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>{SITE.naamKort}<span>{SITE.naamAccent}</span></span>
+      </a>
+      <nav class="hoofd" aria-label="Hoofdmenu"><ul>
+        <li><a href={`/schoolvakanties-${schooljaarNu}`}>Schoolvakanties</a></li>
+        <li><a href={`/zomervakantie-${hoofdJaar}`}>Zomervakantie</a></li>
+        <li><a href={`/feestdagen-${hoofdJaar}`}>Feestdagen</a></li>
+        <li><a href="/gemeente/">Mijn gemeente</a></li>
+        <li><a href="/agenda/">Agenda</a></li>
+      </ul></nav>
+      <details class="menu">
+        <summary aria-label="Menu"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M3 6h16M3 11h16M3 16h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></summary>
+        <ul>
+          <li><a href={`/schoolvakanties-${schooljaarNu}`}>Schoolvakanties {schooljaarNu}</a></li>
+          <li><a href={`/zomervakantie-${hoofdJaar}`}>Zomervakantie {hoofdJaar}</a></li>
+          <li><a href={`/feestdagen-${hoofdJaar}`}>Feestdagen {hoofdJaar}</a></li>
+          <li><a href={`/vrije-dagen-${hoofdJaar}`}>Slim vrij nemen {hoofdJaar}</a></li>
+          <li><a href="/gemeente/">Welke regio is mijn gemeente?</a></li>
+          <li><a href="/agenda/">In je agenda</a></li>
+        </ul>
+      </details>
+    </div></header>
+    <main class="wrap">
+      {kruimels.length > 0 && (
+        <nav class="kruimel" aria-label="Kruimelpad"><a href="/">Home</a>{kruimels.map((k) => <> › {k.url ? <a href={k.url}>{k.naam}</a> : k.naam}</>)}</nav>
+      )}
+      <slot />
+    </main>
+    <footer class="site"><div class="wrap kolommen">
+      <p class="disclaimer">Schoolvakanties: open data van de Rijksoverheid, automatisch bijgewerkt. Voor herfst-, voorjaars- en meivakantie geeft het ministerie adviesdata; scholen mogen daarvan afwijken. Check bij twijfel altijd de schoolgids.</p>
+      <ul>
+        {KALENDERJAREN.filter((j) => j >= ditJaar).slice(0, 3).map((j) => <li><a href={`/schoolvakanties-${j}`}>Schoolvakanties {j}</a></li>)}
+        <li><a href={`/feestdagen-${hoofdJaar}`}>Feestdagen {hoofdJaar}</a></li>
+        <li><a href={`/vrije-dagen-${hoofdJaar}`}>Slim vrij nemen</a></li>
+        <li><a href="/regio/">Regio's</a></li>
+        <li><a href="/gemeente/">Gemeenten</a></li>
+        <li><a href="/uitleg/">Uitleg</a></li>
+        <li><a href="/agenda/">Agenda</a></li>
+        <li><a href="/widget/">Gratis widget</a></li>
+        <li><a href="/over">Over deze site</a></li>
+        <li><a href="/privacy">Privacy</a></li>
+      </ul>
+    </div></footer>
+  </body>
+</html>

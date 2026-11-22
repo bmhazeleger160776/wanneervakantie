@@ -1,0 +1,26 @@
+---
+import Base from "../../layouts/Base.astro";
+const faq = [
+  { v: "Mag ik mijn kind een paar dagen eerder van school halen voor vakantie?", a: "Nee. Een goedkopere reis, drukte op de weg of al gekochte tickets zijn geen geldige redenen voor extra verlof." },
+  { v: "Bij wie vraag ik extra verlof aan?", a: "Bij de directeur van de school, het liefst 8 weken of eerder voor de vakantie. Gaat het om meer dan 10 schooldagen, dan beslist de leerplichtambtenaar van de gemeente." },
+  { v: "Hoeveel dagen extra vakantieverlof kan ik krijgen?", a: "Maximaal 10 schooldagen per schooljaar, en nooit in de eerste 2 weken na de zomervakantie." },
+];
+const jsonLd = [{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.v, acceptedAnswer: { "@type": "Answer", text: f.a } })) }];
+---
+<Base title="Vrij vragen buiten de schoolvakantie: regels en voorwaarden" description="Wanneer mag je kind extra vrij krijgen buiten de schoolvakanties? De regels van de Leerplichtwet: maximaal 10 dagen, niet in de eerste 2 weken, aanvragen bij de directeur." canonical="/uitleg/vrij-buiten-schoolvakantie" jsonLd={jsonLd} kruimels={[{ naam: "Uitleg", url: "/uitleg/" }, { naam: "Vrij buiten de schoolvakantie" }]}>
+  <h1>Vrij vragen buiten de schoolvakantie</h1>
+  <p class="intro">Kinderen moeten volgens de Leerplichtwet naar school. Alleen in bijzondere gevallen mag de school extra vrij geven.</p>
+  <h2>Vakantie vanwege je werk</h2>
+  <p>Kun je door je werk in geen enkele schoolvakantie met het gezin op vakantie, bijvoorbeeld bij seizoenswerk? Dan kun je de directeur om extra verlof vragen. De voorwaarden:</p>
+  <ul>
+    <li>je kunt aantonen dat vakantie in de schoolvakanties door je werk niet mogelijk is;</li>
+    <li>het verlof duurt maximaal 10 schooldagen;</li>
+    <li>het valt niet in de eerste 2 weken na de zomervakantie;</li>
+    <li>je vraagt het op tijd aan, het liefst 8 weken of eerder van tevoren.</li>
+  </ul>
+  <h2>Bijzondere gebeurtenissen</h2>
+  <p>Voor bijvoorbeeld een huwelijk, begrafenis of jubileum in de familie kan de directeur ook vrij geven. Gaat het om meer dan 10 schooldagen per schooljaar, dan beslist de leerplichtambtenaar van de gemeente.</p>
+  <h2>Veelgestelde vragen</h2>
+  {faq.map((f) => <details><summary>{f.v}</summary><p>{f.a}</p></details>)}
+  <p class="bron muted klein">Bron: <a href="https://www.rijksoverheid.nl/onderwerpen/leerplicht/vraag-en-antwoord/leerplicht-schoolvakanties">Rijksoverheid, leerplicht en schoolvakanties</a>. Bij twijfel beslist de school of de leerplichtambtenaar.</p>
+</Base>

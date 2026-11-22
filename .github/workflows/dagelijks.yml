@@ -1,8 +1,8 @@
 name: Data ophalen en publiceren
 on:
   schedule:
-    - cron: "17 3 * * *"
-  workflow_dispatch:
+    - cron: "17 3 * * *"   # elke nacht om 03:17 UTC (aftellen en "nu"-markeringen blijven zo actueel)
+  workflow_dispatch:       # handmatig starten via het tabblad Actions
   push:
     branches: [main]
 

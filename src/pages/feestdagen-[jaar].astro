@@ -1,0 +1,58 @@
+---
+import Base from "../layouts/Base.astro";
+import { feestdagen, brugdagen, pasen } from "../lib/feestdagen.js";
+import { volledig, dagNaam, lang, plus } from "../lib/datum.js";
+import { KALENDERJAREN } from "../lib/vakanties.js";
+
+export function getStaticPaths() {
+  return KALENDERJAREN.map((j) => ({ params: { jaar: String(j) }, props: { jaar: j } }));
+}
+const { jaar } = Astro.props;
+const lijst = feestdagen(jaar);
+const brug = brugdagen(jaar);
+const p = pasen(jaar);
+const carnaval = { start: plus(p, -49), eind: plus(p, -47) };
+const ander = KALENDERJAREN.filter((j) => j !== jaar);
+const faq = [
+  { v: `Wanneer is het Pasen in ${jaar}?`, a: `Eerste Paasdag is ${volledig(p)}, Tweede Paasdag ${volledig(plus(p, 1))}.` },
+  { v: `Op welke dag valt Koningsdag ${jaar}?`, a: `Koningsdag ${jaar} is op ${volledig(lijst.find((f) => f.naam === "Koningsdag").datum)}.` },
+  { v: `Wanneer is Hemelvaart ${jaar}?`, a: `Hemelvaartsdag is op ${volledig(plus(p, 39))}. De vrijdag erna is een populaire brugdag.` },
+  { v: `Is Bevrijdingsdag ${jaar} een vrije dag?`, a: lijst.find((f) => f.naam === "Bevrijdingsdag").uitleg },
+];
+const jsonLd = [{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.v, acceptedAnswer: { "@type": "Answer", text: f.a } })) }];
+---
+<Base title={`Feestdagen ${jaar} in Nederland: alle data op een rij`} description={`Alle feestdagen ${jaar}: Pasen ${lang(p, false)}, Koningsdag, Hemelvaart, Pinksteren en Kerst. Met brugdagen en welke dagen je vrij bent.`} canonical={`/feestdagen-${jaar}`} jsonLd={jsonLd} kruimels={[{ naam: `Feestdagen ${jaar}` }]}>
+  <h1>Feestdagen {jaar}</h1>
+  <p class="intro">Alle officiële feestdagen in Nederland in {jaar}, met de dag van de week. Op de meeste feestdagen ben je vrij; bij Goede Vrijdag en Bevrijdingsdag hangt dat af van je cao of werkgever.</p>
+  <div class="tabelwrap"><table>
+    <thead><tr><th>Feestdag</th><th>Datum</th></tr></thead>
+    <tbody>{lijst.map((f) => (
+      <tr>
+        <td><strong>{f.naam}</strong><br /><span class="muted klein">{f.weekend ? "valt in het weekend" : f.vrij ? "meestal vrij" : "vrij hangt af van je cao"}</span></td>
+        <td>{dagNaam(f.datum)} {lang(f.datum)}</td>
+      </tr>
+    ))}</tbody>
+  </table></div>
+
+  <h2>Brugdagen {jaar}</h2>
+  {brug.length
+    ? <><p>Een brugdag is een werkdag tussen een feestdag en het weekend. Met één vrije dag heb je dan een lang weekend.</p>
+      <ul>{brug.map((b) => <li><strong>{dagNaam(b.datum)} {lang(b.datum)}</strong>, na of voor {b.bij}</li>)}</ul></>
+    : <p>In {jaar} zijn er geen brugdagen behalve rond Hemelvaart.</p>}
+  <p><a href={`/vrije-dagen-${jaar}`}>Zo neem je in {jaar} slim vrij →</a></p>
+
+  <h2>Andere bijzondere dagen</h2>
+  <ul>
+    <li>Carnaval: zondag {lang(carnaval.start)} t/m dinsdag {lang(carnaval.eind)}</li>
+    <li>Moederdag: zondag {lang((() => { let x = `${jaar}-05-08`; while (new Date(x + "T00:00:00Z").getUTCDay() !== 0) x = plus(x, 1); return x; })())}</li>
+    <li>Vaderdag: zondag {lang((() => { let x = `${jaar}-06-15`; while (new Date(x + "T00:00:00Z").getUTCDay() !== 0) x = plus(x, 1); return x; })())}</li>
+    <li>Sinterklaasavond: {dagNaam(`${jaar}-12-05`)} 5 december</li>
+    <li>Oudejaarsavond: {dagNaam(`${jaar}-12-31`)} 31 december</li>
+  </ul>
+
+  <h2>Veelgestelde vragen</h2>
+  {faq.map((f) => <details><summary>{f.v}</summary><p>{f.a}</p></details>)}
+
+  <h2>Andere jaren</h2>
+  <ul class="chips">{ander.map((j) => <li><a href={`/feestdagen-${j}`}>Feestdagen {j}</a></li>)}<li><a href={`/schoolvakanties-${jaar}`}>Schoolvakanties {jaar}</a></li></ul>
+</Base>

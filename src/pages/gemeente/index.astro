@@ -1,0 +1,32 @@
+---
+import Base from "../../layouts/Base.astro";
+import GemeenteZoeker from "../../components/GemeenteZoeker.astro";
+import { GEMEENTEN, PROVINCIES, REGIO_NAAM } from "../../lib/vakanties.js";
+const perProv = PROVINCIES.map((p) => ({ p, g: GEMEENTEN.filter((x) => x.provincie === p) }));
+---
+<Base title="Schoolvakanties per gemeente: welke regio heeft mijn gemeente?" description="Zoek je gemeente en zie direct of je in regio Noord, Midden of Zuid valt, met alle schoolvakanties. Alle 342 gemeenten van Nederland." canonical="/gemeente/" kruimels={[{ naam: "Gemeenten" }]}>
+  <h1>Welke regio heeft mijn gemeente?</h1>
+  <p class="intro">Zoek je gemeente, of kies hem uit de lijst per provincie. Je ziet dan de regio en alle schoolvakanties.</p>
+  <GemeenteZoeker />
+  {perProv.map(({ p, g }) => (
+    <>
+      <h2>{p}</h2>
+      <ul class="lijst">{g.map((x) => <li><a href={`/gemeente/${x.slug}`}>{x.naam}</a> <span class={`regio ${x.regio}`}>{REGIO_NAAM[x.regio]}</span></li>)}</ul>
+    </>
+  ))}
+</Base>
+<style>
+  .lijst { list-style: none; padding: 0; margin: 0; columns: 3 200px; column-gap: 24px; }
+  .lijst li { break-inside: avoid; padding: 4px 0; }
+  .lijst .regio { font-size: .7rem; padding: 1px 7px; vertical-align: 1px; }
+</style>
+<script>
+  // Zoekopdracht uit de URL (?q=...) direct doorsturen naar de gemeente
+  const q = new URLSearchParams(location.search).get("q");
+  if (q) {
+    const n = (s) => s.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").trim();
+    const links = [...document.querySelectorAll(".lijst a")];
+    const hit = links.find((a) => n(a.textContent) === n(q)) || links.find((a) => n(a.textContent).startsWith(n(q)));
+    if (hit) location.replace(hit.href);
+  }
+</script>

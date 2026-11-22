@@ -1,0 +1,482 @@
+{
+ "bron": "https://opendata.rijksoverheid.nl/v1/infotypes/schoolholidays",
+ "licentie": "CC0 1.0",
+ "opgehaald": "2026-11-20",
+ "schooljaren": [
+  {
+   "schooljaar": "2025-2026",
+   "vakanties": [
+    {
+     "type": "Herfstvakantie",
+     "verplicht": false,
+     "regios": {
+      "noord": {
+       "start": "2025-10-18",
+       "eind": "2025-10-26"
+      },
+      "midden": {
+       "start": "2025-10-18",
+       "eind": "2025-10-26"
+      },
+      "zuid": {
+       "start": "2025-10-11",
+       "eind": "2025-10-19"
+      }
+     }
+    },
+    {
+     "type": "Kerstvakantie",
+     "verplicht": true,
+     "regios": {
+      "noord": {
+       "start": "2025-12-20",
+       "eind": "2026-01-04"
+      },
+      "midden": {
+       "start": "2025-12-20",
+       "eind": "2026-01-04"
+      },
+      "zuid": {
+       "start": "2025-12-20",
+       "eind": "2026-01-04"
+      }
+     }
+    },
+    {
+     "type": "Voorjaarsvakantie",
+     "verplicht": false,
+     "regios": {
+      "noord": {
+       "start": "2026-02-21",
+       "eind": "2026-03-01"
+      },
+      "midden": {
+       "start": "2026-02-14",
+       "eind": "2026-02-22"
+      },
+      "zuid": {
+       "start": "2026-02-14",
+       "eind": "2026-02-22"
+      }
+     }
+    },
+    {
+     "type": "Meivakantie",
+     "verplicht": false,
+     "regios": {
+      "noord": {
+       "start": "2026-04-25",
+       "eind": "2026-05-03"
+      },
+      "midden": {
+       "start": "2026-04-25",
+       "eind": "2026-05-03"
+      },
+      "zuid": {
+       "start": "2026-04-25",
+       "eind": "2026-05-03"
+      }
+     }
+    },
+    {
+     "type": "Zomervakantie",
+     "verplicht": true,
+     "regios": {
+      "noord": {
+       "start": "2026-07-04",
+       "eind": "2026-08-16"
+      },
+      "midden": {
+       "start": "2026-07-18",
+       "eind": "2026-08-30"
+      },
+      "zuid": {
+       "start": "2026-07-11",
+       "eind": "2026-08-23"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "schooljaar": "2026-2027",
+   "vakanties": [
+    {
+     "type": "Herfstvakantie",
+     "verplicht": false,
+     "regios": {
+      "noord": {
+       "start": "2026-10-10",
+       "eind": "2026-10-18"
+      },
+      "midden": {
+       "start": "2026-10-17",
+       "eind": "2026-10-25"
+      },
+      "zuid": {
+       "start": "2026-10-17",
+       "eind": "2026-10-25"
+      }
+     }
+    },
+    {
+     "type": "Kerstvakantie",
+     "verplicht": true,
+     "regios": {
+      "noord": {
+       "start": "2026-12-19",
+       "eind": "2027-01-03"
+      },
+      "midden": {
+       "start": "2026-12-19",
+       "eind": "2027-01-03"
+      },
+      "zuid": {
+       "start": "2026-12-19",
+       "eind": "2027-01-03"
+      }
+     }
+    },
+    {
+     "type": "Voorjaarsvakantie",
+     "verplicht": false,
+     "regios": {
+      "noord": {
+       "start": "2027-02-20",
+       "eind": "2027-02-28"
+      },
+      "midden": {
+       "start": "2027-02-20",
+       "eind": "2027-02-28"
+      },
+      "zuid": {
+       "start": "2027-02-13",
+       "eind": "2027-02-21"
+      }
+     }
+    },
+    {
+     "type": "Meivakantie",
+     "verplicht": false,
+     "regios": {
+      "noord": {
+       "start": "2027-04-24",
+       "eind": "2027-05-02"
+      },
+      "midden": {
+       "start": "2027-04-24",
+       "eind": "2027-05-02"
+      },
+      "zuid": {
+       "start": "2027-04-24",
+       "eind": "2027-05-02"
+      }
+     }
+    },
+    {
+     "type": "Zomervakantie",
+     "verplicht": true,
+     "regios": {
+      "noord": {
+       "start": "2027-07-10",
+       "eind": "2027-08-22"
+      },
+      "midden": {
+       "start": "2027-07-17",
+       "eind": "2027-08-29"
+      },
+      "zuid": {
+       "start": "2027-07-24",
+       "eind": "2027-09-05"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "schooljaar": "2027-2028",
+   "vakanties": [
+    {
+     "type": "Herfstvakantie",
+     "verplicht": false,
+     "regios": {
+      "noord": {
+       "start": "2027-10-16",
+       "eind": "2027-10-24"
+      },
+      "midden": {
+       "start": "2027-10-16",
+       "eind": "2027-10-24"
+      },
+      "zuid": {
+       "start": "2027-10-23",
+       "eind": "2027-10-31"
+      }
+     }
+    },
+    {
+     "type": "Kerstvakantie",
+     "verplicht": true,
+     "regios": {
+      "noord": {
+       "start": "2027-12-25",
+       "eind": "2028-01-09"
+      },
+      "midden": {
+       "start": "2027-12-25",
+       "eind": "2028-01-09"
+      },
+      "zuid": {
+       "start": "2027-12-25",
+       "eind": "2028-01-09"
+      }
+     }
+    },
+    {
+     "type": "Voorjaarsvakantie",
+     "verplicht": false,
+     "regios": {
+      "noord": {
+       "start": "2028-02-19",
+       "eind": "2028-02-27"
+      },
+      "midden": {
+       "start": "2028-02-26",
+       "eind": "2028-03-05"
+      },
+      "zuid": {
+       "start": "2028-02-26",
+       "eind": "2028-03-05"
+      }
+     }
+    },
+    {
+     "type": "Meivakantie",
+     "verplicht": false,
+     "regios": {
+      "noord": {
+       "start": "2028-04-29",
+       "eind": "2028-05-07"
+      },
+      "midden": {
+       "start": "2028-04-29",
+       "eind": "2028-05-07"
+      },
+      "zuid": {
+       "start": "2028-04-29",
+       "eind": "2028-05-07"
+      }
+     }
+    },
+    {
+     "type": "Zomervakantie",
+     "verplicht": true,
+     "regios": {
+      "noord": {
+       "start": "2028-07-15",
+       "eind": "2028-08-27"
+      },
+      "midden": {
+       "start": "2028-07-08",
+       "eind": "2028-08-20"
+      },
+      "zuid": {
+       "start": "2028-07-22",
+       "eind": "2028-09-03"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "schooljaar": "2028-2029",
+   "vakanties": [
+    {
+     "type": "Herfstvakantie",
+     "verplicht": false,
+     "regios": {
+      "noord": {
+       "start": "2028-10-14",
+       "eind": "2028-10-22"
+      },
+      "midden": {
+       "start": "2028-10-21",
+       "eind": "2028-10-29"
+      },
+      "zuid": {
+       "start": "2028-10-21",
+       "eind": "2028-10-29"
+      }
+     }
+    },
+    {
+     "type": "Kerstvakantie",
+     "verplicht": true,
+     "regios": {
+      "noord": {
+       "start": "2028-12-23",
+       "eind": "2029-01-07"
+      },
+      "midden": {
+       "start": "2028-12-23",
+       "eind": "2029-01-07"
+      },
+      "zuid": {
+       "start": "2028-12-23",
+       "eind": "2029-01-07"
+      }
+     }
+    },
+    {
+     "type": "Voorjaarsvakantie",
+     "verplicht": false,
+     "regios": {
+      "noord": {
+       "start": "2029-02-17",
+       "eind": "2029-02-25"
+      },
+      "midden": {
+       "start": "2029-02-17",
+       "eind": "2029-02-25"
+      },
+      "zuid": {
+       "start": "2029-02-10",
+       "eind": "2029-02-18"
+      }
+     }
+    },
+    {
+     "type": "Meivakantie",
+     "verplicht": false,
+     "regios": {
+      "noord": {
+       "start": "2029-04-28",
+       "eind": "2029-05-06"
+      },
+      "midden": {
+       "start": "2029-04-28",
+       "eind": "2029-05-06"
+      },
+      "zuid": {
+       "start": "2029-04-28",
+       "eind": "2029-05-06"
+      }
+     }
+    },
+    {
+     "type": "Zomervakantie",
+     "verplicht": true,
+     "regios": {
+      "noord": {
+       "start": "2029-07-21",
+       "eind": "2029-09-02"
+      },
+      "midden": {
+       "start": "2029-07-07",
+       "eind": "2029-08-19"
+      },
+      "zuid": {
+       "start": "2029-07-14",
+       "eind": "2029-08-26"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "schooljaar": "2029-2030",
+   "vakanties": [
+    {
+     "type": "Herfstvakantie",
+     "verplicht": false,
+     "regios": {
+      "noord": {
+       "start": "2029-10-20",
+       "eind": "2029-10-28"
+      },
+      "midden": {
+       "start": "2029-10-20",
+       "eind": "2029-10-28"
+      },
+      "zuid": {
+       "start": "2029-10-13",
+       "eind": "2029-10-21"
+      }
+     }
+    },
+    {
+     "type": "Kerstvakantie",
+     "verplicht": true,
+     "regios": {
+      "noord": {
+       "start": "2029-12-22",
+       "eind": "2030-01-06"
+      },
+      "midden": {
+       "start": "2029-12-22",
+       "eind": "2030-01-06"
+      },
+      "zuid": {
+       "start": "2029-12-22",
+       "eind": "2030-01-06"
+      }
+     }
+    },
+    {
+     "type": "Voorjaarsvakantie",
+     "verplicht": false,
+     "regios": {
+      "noord": {
+       "start": "2030-02-16",
+       "eind": "2030-02-24"
+      },
+      "midden": {
+       "start": "2030-02-23",
+       "eind": "2030-03-03"
+      },
+      "zuid": {
+       "start": "2030-02-23",
+       "eind": "2030-03-03"
+      }
+     }
+    },
+    {
+     "type": "Meivakantie",
+     "verplicht": false,
+     "regios": {
+      "noord": {
+       "start": "2030-04-27",
+       "eind": "2030-05-05"
+      },
+      "midden": {
+       "start": "2030-04-27",
+       "eind": "2030-05-05"
+      },
+      "zuid": {
+       "start": "2030-04-27",
+       "eind": "2030-05-05"
+      }
+     }
+    },
+    {
+     "type": "Zomervakantie",
+     "verplicht": true,
+     "regios": {
+      "noord": {
+       "start": "2030-07-20",
+       "eind": "2030-09-01"
+      },
+      "midden": {
+       "start": "2030-07-13",
+       "eind": "2030-08-25"
+      },
+      "zuid": {
+       "start": "2030-07-06",
+       "eind": "2030-08-18"
+      }
+     }
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,47 @@
+---
+// Kleine widget voor op websites van scholen, kinderopvang en verenigingen. Wordt in een iframe geladen.
+import { REGIOS, REGIO_NAAM, komende } from "../../lib/vakanties.js";
+import { kort, vandaag } from "../../lib/datum.js";
+import { SITE } from "../../lib/site.js";
+export function getStaticPaths() { return REGIOS.map((r) => ({ params: { regio: r } })); }
+const { regio } = Astro.params;
+const lijst = komende(vandaag(), regio, 8);
+const data = lijst.map((v) => ({ n: v.naam, s: v.slug, a: v.regios[regio].start, b: v.regios[regio].eind }));
+---
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Schoolvakanties regio {REGIO_NAAM[regio]}</title>
+  {SITE.umamiId && <script is:inline defer src="https://cloud.umami.is/script.js" data-website-id={SITE.umamiId} data-domains={SITE.domein}></script>}
+  <style>
+    body { margin: 0; font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #1d1a17; }
+    .w { border: 1px solid #ece4dc; border-radius: 12px; padding: 12px 14px; background: #fff; }
+    .kop { font-weight: 700; font-size: 15px; margin: 0 0 2px; }
+    .af { margin: 0 0 8px; color: #a6360a; font-weight: 600; }
+    ul { list-style: none; margin: 0; padding: 0; }
+    li { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-top: 1px solid #f3ede6; }
+    li span:last-child { color: #6b6259; white-space: nowrap; }
+    a { color: inherit; text-decoration: none; }
+    .bron { display: block; margin-top: 8px; font-size: 11px; color: #6b6259; text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="w">
+    <p class="kop">Schoolvakanties regio {REGIO_NAAM[regio]}</p>
+    <p class="af" id="af"></p>
+    <ul>{lijst.slice(0, 4).map((v) => (
+      <li><span>{v.naam}</span><span>{kort(v.regios[regio].start)} – {kort(v.regios[regio].eind)}</span></li>
+    ))}</ul>
+    <a class="bron" href={`${SITE.url}/regio/${regio}`} target="_blank" rel="noopener" data-umami-event="widget-doorklik" data-umami-event-regio={regio}>Alle vakanties op {SITE.domein}</a>
+  </div>
+  <script is:inline define:vars={{ data }}>
+    const n = new Date(); const nu = Date.UTC(n.getFullYear(), n.getMonth(), n.getDate());
+    const t = (s) => Date.parse(s + "T00:00:00Z");
+    const v = data.find((x) => t(x.b) >= nu);
+    const el = document.getElementById("af");
+    if (v) el.textContent = t(v.a) <= nu ? `Het is nu ${v.n.toLowerCase()}!` : `Nog ${Math.round((t(v.a) - nu) / 864e5)} dagen tot de ${v.n.toLowerCase()}`;
+  </script>
+</body>
+</html>

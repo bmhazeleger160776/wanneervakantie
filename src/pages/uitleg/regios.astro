@@ -1,0 +1,31 @@
+---
+import Base from "../../layouts/Base.astro";
+import GemeenteZoeker from "../../components/GemeenteZoeker.astro";
+import { vanType, REGIOS, REGIO_NAAM } from "../../lib/vakanties.js";
+import { lang } from "../../lib/datum.js";
+const zomers = vanType("zomervakantie");
+const faq = [
+  { v: "Waarom zijn er vakantieregio's?", a: "Om de drukte te spreiden. Als heel Nederland tegelijk op vakantie gaat, wordt het extra druk op de weg, op vliegvelden en op vakantiebestemmingen. Door drie regio's begint en eindigt de zomervakantie niet overal op hetzelfde moment." },
+  { v: "Wie bepaalt de regio-indeling?", a: "Het ministerie van Onderwijs, Cultuur en Wetenschap (OCW) legt de regio's en de vakantiedata vast in een regeling, steeds voor meerdere schooljaren vooruit." },
+  { v: "Hangt de regio af van waar ik woon of waar de school staat?", a: "Van waar de school staat. Woon je in regio Noord, maar gaat je kind naar school in regio Midden, dan volgt je kind de vakanties van regio Midden." },
+];
+const jsonLd = [{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.v, acceptedAnswer: { "@type": "Answer", text: f.a } })) }];
+---
+<Base title="Waarom zijn er vakantieregio's? Noord, Midden en Zuid uitgelegd" description="Nederland heeft drie vakantieregio's om de drukte te spreiden. Zo werkt de indeling, wie hem bepaalt en hoe de zomervakantie per jaar rouleert." canonical="/uitleg/regios" jsonLd={jsonLd} kruimels={[{ naam: "Uitleg", url: "/uitleg/" }, { naam: "Vakantieregio's" }]}>
+  <h1>Waarom zijn er vakantieregio's?</h1>
+  <p class="intro">Nederland is voor de schoolvakanties verdeeld in drie regio's: Noord, Midden en Zuid. Zo gaat niet het hele land tegelijk op vakantie.</p>
+  <h2>Hoe werkt het?</h2>
+  <p>De zomervakantie duurt overal zes weken, maar begint per regio op een ander moment. Elk jaar schuift de volgorde door, zodat elke regio afwisselend vroeg, middel en laat vakantie heeft. Ook de herfst- en voorjaarsvakantie verschillen vaak per regio. De kerstvakantie en de meivakantie zijn in heel Nederland gelijk.</p>
+  <h2>De zomervakantie rouleert</h2>
+  <div class="tabelwrap"><table>
+    <thead><tr><th>Jaar</th>{REGIOS.map((r) => <th><span class={`regio ${r}`}>{REGIO_NAAM[r]}</span></th>)}</tr></thead>
+    <tbody>{zomers.map((v) => (
+      <tr><td><a href={`/${v.slug}`}>{v.jaar}</a></td>{REGIOS.map((r) => <td class="nw">vanaf {lang(v.regios[r].start, false)}</td>)}</tr>
+    ))}</tbody>
+  </table></div>
+  <h2>Zoek je regio</h2>
+  <GemeenteZoeker />
+  <h2>Veelgestelde vragen</h2>
+  {faq.map((f) => <details><summary>{f.v}</summary><p>{f.a}</p></details>)}
+  <p class="bron muted klein">Bron: <a href="https://www.rijksoverheid.nl/onderwerpen/schoolvakanties/regios-schoolvakantie">Rijksoverheid, regio's schoolvakantie</a>.</p>
+</Base>

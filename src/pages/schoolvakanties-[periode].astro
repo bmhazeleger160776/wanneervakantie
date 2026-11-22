@@ -1,0 +1,85 @@
+---
+import Base from "../layouts/Base.astro";
+import VakantieTabel from "../components/VakantieTabel.astro";
+import Aftellen from "../components/Aftellen.astro";
+import GemeenteZoeker from "../components/GemeenteZoeker.astro";
+import Jaarkalender from "../components/Jaarkalender.astro";
+import { SCHOOLJAREN, KALENDERJAREN, vakantiesInSchooljaar, vakantiesInJaar, REGIOS, REGIO_NAAM, VAKANTIES } from "../lib/vakanties.js";
+import { periode, volledig, vandaag, kort } from "../lib/datum.js";
+import { feestdagen } from "../lib/feestdagen.js";
+
+export function getStaticPaths() {
+  return [
+    ...SCHOOLJAREN.map((s) => ({ params: { periode: s }, props: { soort: "schooljaar", waarde: s } })),
+    ...KALENDERJAREN.map((j) => ({ params: { periode: String(j) }, props: { soort: "jaar", waarde: j } })),
+  ];
+}
+const { soort, waarde } = Astro.props;
+const nu = vandaag();
+const isSJ = soort === "schooljaar";
+const lijst = isSJ ? vakantiesInSchooljaar(waarde) : vakantiesInJaar(waarde);
+const label = isSJ ? `schooljaar ${waarde}` : String(waarde);
+const zomer = lijst.find((v) => v.type === "zomervakantie");
+const kalJaar = isSJ ? null : waarde;
+const fd = kalJaar ? feestdagen(kalJaar).filter((f) => f.vrij) : [];
+
+const vorige = isSJ ? SCHOOLJAREN[SCHOOLJAREN.indexOf(waarde) - 1] : KALENDERJAREN[KALENDERJAREN.indexOf(waarde) - 1];
+const volgende = isSJ ? SCHOOLJAREN[SCHOOLJAREN.indexOf(waarde) + 1] : KALENDERJAREN[KALENDERJAREN.indexOf(waarde) + 1];
+const ookZien = isSJ ? [Number(waarde.slice(0, 4)), Number(waarde.slice(5))].filter((j) => KALENDERJAREN.includes(j)).map((j) => ({ url: `/schoolvakanties-${j}`, t: `Schoolvakanties ${j}` }))
+  : SCHOOLJAREN.filter((s) => s.includes(String(waarde))).map((s) => ({ url: `/schoolvakanties-${s}`, t: `Schooljaar ${s}` }));
+
+const titel = isSJ ? `Schoolvakanties ${waarde}: alle data per regio` : `Schoolvakanties ${waarde}: alle data per regio (Noord, Midden, Zuid)`;
+const kd = (x) => kort(x).slice(3); // "17 jul"
+const desc = isSJ
+  ? `Schoolvakanties ${waarde} per regio.${zomer ? ` Zomervakantie: ${REGIOS.map((r) => `${REGIO_NAAM[r]} ${kd(zomer.regios[r].start)}–${kd(zomer.regios[r].eind)}`).join(", ")}.` : ""} Met herfst-, kerst-, voorjaars- en meivakantie.`
+  : `Alle schoolvakanties ${waarde} per regio: voorjaars-, mei-, zomer-, herfst- en kerstvakantie. Met feestdagen ${waarde} en een jaarkalender.`;
+const faq = [
+  zomer && { v: `Wanneer is de zomervakantie ${zomer.jaar}?`, a: REGIOS.map((r) => `Regio ${REGIO_NAAM[r]}: ${periode(zomer.regios[r].start, zomer.regios[r].eind)}`).join(". ") + "." },
+  { v: `Welke regio begint als eerste met de zomervakantie?`, a: zomer ? `In ${zomer.jaar} begint regio ${REGIO_NAAM[REGIOS.find((r) => zomer.regios[r].start === zomer.start)]} als eerste, op ${volledig(zomer.start)}. De regio's wisselen elk jaar van volgorde.` : "De regio's wisselen elk jaar van volgorde." },
+  { v: "Waar vind ik de vakantiedata van mijn school?", a: "De zomer- en kerstvakantie liggen vast. Voor herfst-, voorjaars- en meivakantie geeft het ministerie adviesdata; scholen mogen afwijken. De precieze data staan in de schoolgids of op de website van de school." },
+].filter(Boolean);
+const jsonLd = [{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.v, acceptedAnswer: { "@type": "Answer", text: f.a } })) }];
+---
+<Base title={titel} description={desc} canonical={`/schoolvakanties-${waarde}`} jsonLd={jsonLd} kruimels={[{ naam: `Schoolvakanties ${waarde}` }]}>
+  <h1>Schoolvakanties {waarde}</h1>
+  <p class="intro">{isSJ
+    ? <>Alle vakanties van schooljaar {waarde} voor regio Noord, Midden en Zuid. De zomer- en kerstvakantie liggen vast; de andere vakanties zijn adviesdata.</>
+    : <>Alle schoolvakanties die in {waarde} beginnen, per regio. Zoek je het schooljaar? Bekijk {ookZien.map((o, i) => <>{i > 0 && " of "}<a href={o.url}>{o.t.toLowerCase()}</a></>)}.</>}</p>
+  {lijst.some((v) => v.eind >= nu) && <Aftellen vakanties={lijst} compact />}
+
+  <h2>Overzicht {label}</h2>
+  <VakantieTabel vakanties={lijst} toonSchooljaar={!isSJ} />
+
+  {zomer && (
+    <>
+      <h2>Zomervakantie {zomer.jaar}</h2>
+      <p>{REGIOS.map((r) => <><a href={`/regio/${r}`} class={`regio ${r}`} style="text-decoration:none">{REGIO_NAAM[r]}</a> {periode(zomer.regios[r].start, zomer.regios[r].eind)}<br /></>)}</p>
+      <p><a href={`/${zomer.slug}`}>Alles over de zomervakantie {zomer.jaar} →</a></p>
+    </>
+  )}
+
+  {kalJaar && (
+    <>
+      <h2>Jaarkalender {kalJaar}</h2>
+      <p class="muted">Kies bovenaan je regio; de vakanties van die regio kleuren mee. Feestdagen zijn onderstreept.</p>
+      <Jaarkalender jaar={kalJaar} />
+      <h2>Feestdagen {kalJaar}</h2>
+      <ul>{fd.map((f) => <li>{f.naam}: {volledig(f.datum)}</li>)}</ul>
+      <p><a href={`/feestdagen-${kalJaar}`}>Alle feestdagen {kalJaar}</a> · <a href={`/vrije-dagen-${kalJaar}`}>Slim vrij nemen in {kalJaar}</a></p>
+    </>
+  )}
+
+  <h2>Welke regio heb ik?</h2>
+  <GemeenteZoeker label="Zoek je gemeente" />
+
+  <h2>Veelgestelde vragen</h2>
+  {faq.map((f) => <details><summary>{f.v}</summary><p>{f.a}</p></details>)}
+
+  <h2>Andere jaren</h2>
+  <ul class="chips">
+    {vorige && <li><a href={`/schoolvakanties-${vorige}`}>← {isSJ ? "Schooljaar " : "Schoolvakanties "}{vorige}</a></li>}
+    {volgende && <li><a href={`/schoolvakanties-${volgende}`}>{isSJ ? "Schooljaar " : "Schoolvakanties "}{volgende} →</a></li>}
+    {ookZien.map((o) => <li><a href={o.url}>{o.t}</a></li>)}
+  </ul>
+  <p class="bron muted klein">Bron: Rijksoverheid, open data schoolvakanties (CC0).</p>
+</Base>
