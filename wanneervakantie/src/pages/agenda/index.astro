@@ -1,0 +1,35 @@
+---
+import Base from "../../layouts/Base.astro";
+import { REGIOS, REGIO_NAAM } from "../../lib/vakanties.js";
+import { SITE } from "../../lib/site.js";
+const host = SITE.domein;
+---
+<Base title="Schoolvakanties in je agenda: gratis agenda-abonnement per regio" description="Zet alle schoolvakanties van jouw regio automatisch in je agenda. Werkt met Google Agenda, Apple Agenda en Outlook en blijft vanzelf bijgewerkt." canonical="/agenda/" kruimels={[{ naam: "Agenda" }]}>
+  <h1>Schoolvakanties in je agenda</h1>
+  <p class="intro">Abonneer je één keer en alle schoolvakanties van jouw regio staan automatisch in je agenda. Komen er nieuwe jaren bij, dan verschijnen die vanzelf.</p>
+  <ul class="tegels">
+    {REGIOS.map((r) => (
+      <li><div class="kaartblok agenda" data-regio={r}>
+        <strong><span class={`regio ${r}`}>Regio {REGIO_NAAM[r]}</span></strong>
+        <a class="knop" href={`webcal://${host}/agenda/schoolvakanties-${r}.ics`} data-umami-event="agenda-abonneren" data-umami-event-regio={r}>Abonneren</a>
+        <a class="klein" href={`https://calendar.google.com/calendar/render?cid=${encodeURIComponent(`webcal://${host}/agenda/schoolvakanties-${r}.ics`)}`} rel="noopener" data-umami-event="agenda-google" data-umami-event-regio={r}>In Google Agenda</a>
+        <a class="klein" href={`/agenda/schoolvakanties-${r}.ics`} download>Bestand downloaden (.ics)</a>
+      </div></li>
+    ))}
+    <li><div class="kaartblok agenda">
+      <strong>Feestdagen</strong>
+      <a class="knop" href={`webcal://${host}/agenda/feestdagen.ics`} data-umami-event="agenda-abonneren" data-umami-event-regio="feestdagen">Abonneren</a>
+      <a class="klein" href={`https://calendar.google.com/calendar/render?cid=${encodeURIComponent(`webcal://${host}/agenda/feestdagen.ics`)}`} rel="noopener">In Google Agenda</a>
+      <a class="klein" href="/agenda/feestdagen.ics" download>Bestand downloaden (.ics)</a>
+    </div></li>
+  </ul>
+  <h2>Zo werkt het</h2>
+  <details><summary>iPhone of Mac</summary><p>Tik op Abonneren en bevestig. De vakanties verschijnen als aparte agenda die je aan en uit kunt zetten.</p></details>
+  <details><summary>Google Agenda (Android)</summary><p>Gebruik de link "In Google Agenda" op een computer. Na het toevoegen verschijnt de agenda ook op je telefoon. Google ververst abonnementen zelf, soms pas na een dag.</p></details>
+  <details><summary>Outlook</summary><p>Kies in Outlook "Agenda toevoegen" en dan "Abonneren vanaf internet". Plak daar het adres <code>https://{host}/agenda/schoolvakanties-midden.ics</code> (vervang midden door jouw regio).</p></details>
+  <p class="muted">Weet je je regio niet? <a href="/gemeente/">Zoek je gemeente</a>.</p>
+</Base>
+<style>
+  .agenda { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; height: 100%; }
+  code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; font-size: .88em; word-break: break-all; }
+</style>

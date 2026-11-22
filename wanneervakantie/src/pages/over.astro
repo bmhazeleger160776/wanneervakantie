@@ -1,0 +1,21 @@
+---
+import Base from "../layouts/Base.astro";
+import { SITE } from "../lib/site.js";
+import { OPGEHAALD, GEMEENTEN } from "../lib/vakanties.js";
+import { lang } from "../lib/datum.js";
+---
+<Base title={`Over ${SITE.domein}: wie erachter zit en welke data`} description={`${SITE.domein} is gemaakt door ${SITE.maker}. Alle schoolvakanties komen uit de open data van de Rijksoverheid en worden automatisch bijgewerkt.`} canonical="/over" kruimels={[{ naam: "Over deze site" }]}>
+  <h1>Over {SITE.domein}</h1>
+  <p class="intro">{SITE.domein} is gemaakt door <strong>{SITE.maker}</strong>. Het doel: snel en zonder gedoe zien wanneer het vakantie is, voor jouw regio en jouw gemeente.</p>
+  <h2>Waar komt de data vandaan?</h2>
+  <ul>
+    <li><strong>Schoolvakanties</strong>: de open data van de Rijksoverheid (licentie CC0). De site haalt deze automatisch op; laatst gecontroleerd op {lang(OPGEHAALD)}.</li>
+    <li><strong>Regio per gemeente</strong>: de regio-indeling van de Rijksoverheid, voor alle {GEMEENTEN.length} gemeenten.</li>
+    <li><strong>Feestdagen</strong>: berekend volgens de vaste regels (Pasen volgens de kerkelijke kalender, de andere feestdagen daarvan afgeleid).</li>
+  </ul>
+  <p class="let-op">Voor de herfst-, voorjaars- en meivakantie geeft het ministerie alleen adviesdata. Scholen mogen daarvan afwijken en hebben daarnaast studiedagen. Kijk voor de precieze data altijd in de schoolgids.</p>
+  <h2>Contact</h2>
+  <p>Fout gezien of een vraag over de <a href="/widget/">widget</a>? Mail naar <a href={`mailto:${SITE.mail}`}>{SITE.mail}</a>.</p>
+  <h2>Privacy</h2>
+  <p>Deze site gebruikt geen cookies. Lees meer in de <a href="/privacy">privacyverklaring</a>.</p>
+</Base>

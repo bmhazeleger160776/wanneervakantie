@@ -1,0 +1,122 @@
+---
+import Base from "../layouts/Base.astro";
+import Aftellen from "../components/Aftellen.astro";
+import Reistip from "../components/Reistip.astro";
+import GemeenteZoeker from "../components/GemeenteZoeker.astro";
+import { VAKANTIES, REGIOS, REGIO_NAAM, andereJaren, vakantiesInSchooljaar, groepen, regioLijst, weken } from "../lib/vakanties.js";
+import { volledig, periode, lang, verschil, plus, vandaag, dagNaam, kort } from "../lib/datum.js";
+import { pasen, feestdagen } from "../lib/feestdagen.js";
+
+export function getStaticPaths() {
+  return VAKANTIES.map((v) => ({ params: { vakantie: v.slug }, props: { v } }));
+}
+const { v } = Astro.props;
+const nu = vandaag();
+const naam = v.naam.toLowerCase();
+const g = groepen(v);
+const voorbij = v.eind < nu;
+const anders = andereJaren(v);
+const zelfdeJaar = vakantiesInSchooljaar(v.schooljaar).filter((x) => x.slug !== v.slug);
+
+// Lead: één zin met het antwoord
+const lead = v.gelijk
+  ? `De ${naam} ${v.jaar} is in heel Nederland van ${volledig(v.regios.noord.start)} tot en met ${volledig(v.regios.noord.eind)}.`
+  : `De ${naam} ${v.jaar} begint op ${volledig(v.start)} in ${regioLijst(g.find((x) => x.start === v.start).regios)} en duurt tot en met ${volledig(v.eind)} in ${regioLijst(g.find((x) => x.eind === v.eind).regios)}.`;
+
+// Weken waarin alle regio's tegelijk vrij zijn (drukste en duurste periode)
+const overlapStart = REGIOS.map((r) => v.regios[r].start).sort().at(-1);
+const overlapEind = REGIOS.map((r) => v.regios[r].eind).sort()[0];
+const overlap = !v.gelijk && overlapStart <= overlapEind ? { start: overlapStart, eind: overlapEind, dagen: verschil(overlapStart, overlapEind) + 1 } : null;
+
+// Carnaval (zondag t/m dinsdag, 7 weken voor Pasen) bij de voorjaarsvakantie
+let carnaval = null;
+if (v.type === "voorjaarsvakantie") {
+  const p = pasen(v.jaar);
+  const c = { start: plus(p, -49), eind: plus(p, -47) };
+  const z = v.regios.zuid;
+  carnaval = { ...c, valtInZuid: c.start >= z.start && c.eind <= z.eind };
+}
+// Feestdagen binnen de vakantie
+const fdIn = [...feestdagen(v.jaar), ...feestdagen(v.jaar + 1)].filter((f) => f.datum >= v.start && f.datum <= v.eind);
+
+const faq = [
+  ...REGIOS.filter((r) => !v.gelijk).map((r) => ({ v: `Wanneer is de ${naam} ${v.jaar} in regio ${REGIO_NAAM[r]}?`, a: `In regio ${REGIO_NAAM[r]} is de ${naam} van ${volledig(v.regios[r].start)} tot en met ${volledig(v.regios[r].eind)}.` })),
+  { v: `Hoe lang duurt de ${naam} ${v.jaar}?`, a: `De ${naam} duurt ${v.dagen} dagen (${Math.round(v.dagen / 7)} ${Math.round(v.dagen / 7) === 1 ? "week" : "weken"}), van zaterdag tot en met zondag.` },
+  { v: `Zijn de data van de ${naam} verplicht?`, a: v.verplicht ? `Ja. De ${naam} ligt vast; scholen moeten zich aan deze data houden.` : `Nee, dit zijn adviesdata van het ministerie van OCW. Scholen mogen ervan afwijken. Kijk in de schoolgids of vraag het na bij de school.` },
+];
+const jsonLd = [
+  { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.v, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
+];
+const titel = v.gelijk
+  ? `${v.naam} ${v.jaar}: ${periode(v.regios.noord.start, v.regios.noord.eind)}`
+  : `${v.naam} ${v.jaar} per regio: Noord, Midden en Zuid`;
+---
+<Base title={titel} description={`${lead} Met aftellen, weeknummers${v.gelijk ? "" : ", data per regio"} en wat je moet weten.`} canonical={`/${v.slug}`} jsonLd={jsonLd} kruimels={[{ naam: `Schoolvakanties ${v.schooljaar}`, url: `/schoolvakanties-${v.schooljaar}` }, { naam: `${v.naam} ${v.jaar}` }]}>
+  <h1>{v.info.emoji} {v.naam} {v.jaar}</h1>
+  <p class="intro">{lead}</p>
+  {!voorbij && <Aftellen vakanties={[v]} compact />}
+  {voorbij && <p class="let-op">Deze vakantie is voorbij. {anders.find((x) => x.jaar > v.jaar) && <>Bekijk de <a href={`/${anders.find((x) => x.jaar > v.jaar).slug}`}>{naam} {anders.find((x) => x.jaar > v.jaar).jaar}</a>.</>}</p>}
+
+  <h2>{v.gelijk ? `Data ${naam} ${v.jaar}` : `${v.naam} ${v.jaar} per regio`}</h2>
+  <div class="tabelwrap"><table>
+    <thead><tr><th>Regio</th><th>Van</th><th>Tot en met</th><th>Week</th></tr></thead>
+    <tbody>
+      {g.map((x) => (
+        <tr>
+          <td>{x.regios.length === 3 ? <span class="regio heel">Heel Nederland</span> : x.regios.map((r) => <><a href={`/regio/${r}`} class={`regio ${r}`} style="text-decoration:none">{REGIO_NAAM[r]}</a> </>)}</td>
+          <td class="nw">{kort(x.start)} {x.start.slice(0, 4)}</td>
+          <td class="nw">{kort(x.eind)} {x.eind.slice(0, 4)}</td>
+          <td class="nw">{weken(x.start, x.eind)}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table></div>
+  {!v.verplicht && <p class="let-op">Dit zijn <strong>adviesdata</strong> van het ministerie van OCW. Scholen mogen ervan afwijken; kijk in de schoolgids of vraag het na bij de school. <a href="/uitleg/adviesdata">Wat zijn adviesdata?</a></p>}
+  {v.type === "meivakantie" && <p class="muted">De meivakantie valt rond Koningsdag. Veel scholen geven één week vrij, sommige scholen twee weken. De tweede week is altijd een keuze van de school zelf.</p>}
+
+  {overlap && (
+    <>
+      <h2>Wanneer is iedereen tegelijk vrij?</h2>
+      <p>Van <strong>{periode(overlap.start, overlap.eind)}</strong> ({overlap.dagen} dagen) hebben alle drie de regio's tegelijk {naam}. Dat is meestal de drukste en duurste periode op vakantieparken, campings en op de weg. In totaal loopt de {naam} in Nederland van {lang(v.start)} tot en met {lang(v.eind)}.</p>
+    </>
+  )}
+  {!v.gelijk && !overlap && (
+    <>
+      <h2>Overlappen de regio's?</h2>
+      <p>Nee: de regio's hebben deze {naam} niet allemaal tegelijk. Daardoor is het minder druk dan bij een landelijke vakantie.</p>
+    </>
+  )}
+
+  {carnaval && (
+    <>
+      <h2>Valt carnaval in de voorjaarsvakantie?</h2>
+      <p>Carnaval {v.jaar} is van zondag {lang(carnaval.start)} tot en met dinsdag {lang(carnaval.eind)}. {carnaval.valtInZuid
+        ? "Dat valt binnen de voorjaarsvakantie van regio Zuid."
+        : "Dat valt niet samen met de adviesdata voor regio Zuid. Scholen in het zuiden kiezen daarom soms andere data; check de schoolgids."}</p>
+    </>
+  )}
+
+  {fdIn.length > 0 && (
+    <>
+      <h2>Feestdagen in deze vakantie</h2>
+      <ul>{fdIn.map((f) => <li>{f.naam}: {dagNaam(f.datum)} {lang(f.datum)}</li>)}</ul>
+    </>
+  )}
+
+  <Reistip type={v.type} />
+
+  <h2>Welke regio heb ik?</h2>
+  <p>Je regio hangt af van de gemeente waar de school staat.</p>
+  <GemeenteZoeker label="Zoek de regio van jouw gemeente" />
+
+  <h2>Veelgestelde vragen</h2>
+  {faq.map((f) => <details><summary>{f.v}</summary><p>{f.a}</p></details>)}
+
+  {anders.length > 0 && (<>
+    <h2>{v.naam} in andere jaren</h2>
+    <ul class="chips">{anders.map((x) => <li><a href={`/${x.slug}`}>{x.naam} {x.jaar}</a></li>)}</ul>
+  </>)}
+  <h2>Andere vakanties in schooljaar {v.schooljaar}</h2>
+  <ul class="chips">{zelfdeJaar.map((x) => <li><a href={`/${x.slug}`}>{x.naam} {x.jaar}</a></li>)}</ul>
+  <p class="bron muted klein">Bron: Rijksoverheid, open data schoolvakanties (CC0).</p>
+</Base>

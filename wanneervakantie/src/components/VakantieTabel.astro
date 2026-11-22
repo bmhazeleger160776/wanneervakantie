@@ -1,0 +1,42 @@
+---
+// Tabel met vakanties per regio. Bij gelijke data in heel Nederland wordt één cel over drie kolommen getoond.
+// Op smalle schermen wordt elke rij een blokje met de regio's onder elkaar.
+import { REGIOS, REGIO_NAAM } from "../lib/vakanties.js";
+import { kort, vandaag } from "../lib/datum.js";
+const { vakanties, metJaarLink = true, toonSchooljaar = false } = Astro.props;
+const nu = vandaag();
+const cel = (p) => `${kort(p.start)} – ${kort(p.eind)} ${p.eind.slice(0, 4)}`;
+---
+<div class="tabelwrap">
+  <table class="vak">
+    <thead><tr><th>Vakantie</th>{REGIOS.map((r) => <th><span class={`regio ${r}`}>{REGIO_NAAM[r]}</span></th>)}</tr></thead>
+    <tbody>
+      {vakanties.map((v) => (
+        <tr class={v.start <= nu && v.eind >= nu ? "nu" : ""}>
+          <td class="naam">
+            {metJaarLink ? <a href={`/${v.slug}`}><strong>{v.naam} {v.jaar}</strong></a> : <strong>{v.naam}</strong>}
+            {toonSchooljaar && <span class="muted klein"> · {v.schooljaar}</span>}
+            {!v.verplicht && <span class="muted klein advies"> · adviesdata</span>}
+          </td>
+          {v.gelijk
+            ? <td colspan="3" class="datum"><span class="lab"><span class="regio heel">Heel NL</span></span>{cel(v.regios.noord)} <span class="muted klein breed">· heel Nederland</span></td>
+            : REGIOS.map((r) => <td class="datum"><span class="lab"><span class={`regio ${r}`}>{REGIO_NAAM[r]}</span></span>{cel(v.regios[r])}</td>)}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+<style>
+  .vak td.datum { font-size: .92rem; white-space: nowrap; }
+  .vak .lab { display: none; }
+  @media (max-width: 640px) {
+    .vak thead { display: none; }
+    .vak, .vak tbody, .vak tr, .vak td { display: block; width: 100%; }
+    .vak tr { border-bottom: 1px solid var(--line); padding: 10px 14px; }
+    .vak tr:last-child { border-bottom: 0; }
+    .vak td { border: 0; padding: 2px 0 !important; }
+    .vak td.naam { padding-bottom: 6px !important; }
+    .vak .lab { display: inline-block; width: 72px; }
+    .vak .breed { display: none; }
+  }
+</style>

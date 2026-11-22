@@ -1,0 +1,26 @@
+---
+import Base from "../../layouts/Base.astro";
+import GemeenteZoeker from "../../components/GemeenteZoeker.astro";
+import { REGIOS, REGIO_NAAM, gemeentenInRegio } from "../../lib/vakanties.js";
+const uitleg = {
+  noord: "Groningen, Fryslân, Drenthe, Overijssel, Noord-Holland, Flevoland (behalve Zeewolde), Hattem, Eemnes en het oude Abcoude.",
+  midden: "Zuid-Holland, Utrecht, Zeewolde, een groot deel van Gelderland (onder meer Apeldoorn, Ede en Barneveld) en het grootste deel van Altena.",
+  zuid: "Limburg, Zeeland, Noord-Brabant en het zuidoosten van Gelderland (onder meer Arnhem en Nijmegen).",
+};
+---
+<Base title="In welke vakantieregio woon ik? Noord, Midden of Zuid" description="Nederland heeft drie vakantieregio's: Noord, Midden en Zuid. Zoek je gemeente en zie direct welke regio je hebt, met alle vakantiedata." canonical="/regio/" kruimels={[{ naam: "Regio's" }]}>
+  <h1>In welke vakantieregio woon ik?</h1>
+  <p class="intro">Om de drukte te spreiden heeft Nederland drie regio's voor de schoolvakanties: Noord, Midden en Zuid. Welke regio je hebt, hangt af van de gemeente waar de school staat.</p>
+  <GemeenteZoeker />
+  <ul class="tegels">
+    {REGIOS.map((r) => (
+      <li><a href={`/regio/${r}`}>
+        <strong><span class={`regio ${r}`}>{REGIO_NAAM[r]}</span></strong>
+        <span class="muted">{uitleg[r]}</span>
+        <span class="muted klein">{gemeentenInRegio(r).length} gemeenten</span>
+        <span class="verder">Vakanties regio {REGIO_NAAM[r]} →</span>
+      </a></li>
+    ))}
+  </ul>
+  <p class="muted"><a href="/uitleg/regios">Waarom zijn er vakantieregio's?</a></p>
+</Base>

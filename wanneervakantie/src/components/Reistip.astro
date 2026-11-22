@@ -1,0 +1,20 @@
+---
+// Reisblok met affiliatelinks. Toont niets zolang er geen partners zijn ingesteld in src/lib/partners.js.
+import { partnersVoor } from "../lib/partners.js";
+const { type, kop = "Op vakantie in deze periode?" } = Astro.props;
+const lijst = partnersVoor(type);
+---
+{lijst.length > 0 && (
+  <aside class="reistip kaartblok">
+    <h2>{kop}</h2>
+    <ul class="tegels">
+      {lijst.map((p) => (
+        <li><a href={p.url} rel="sponsored noopener" target="_blank" data-umami-event="partner-klik" data-umami-event-partner={p.naam}>
+          <strong>{p.naam}</strong><span class="muted">{p.tekst}</span><span class="verder">Bekijk aanbod →</span>
+        </a></li>
+      ))}
+    </ul>
+    <p class="muted klein">Gesponsorde links: als je via deze links boekt, krijgen wij een kleine vergoeding. Jij betaalt niets extra.</p>
+  </aside>
+)}
+<style>.reistip { margin-top: 32px; } .reistip h2 { margin-top: 0; }</style>

@@ -1,0 +1,48 @@
+---
+import Base from "../../layouts/Base.astro";
+import Aftellen from "../../components/Aftellen.astro";
+import { REGIOS, REGIO_NAAM, VAKANTIES, gemeentenInRegio, PROVINCIES, komende } from "../../lib/vakanties.js";
+import { kort, periode, vandaag, volledig } from "../../lib/datum.js";
+
+export function getStaticPaths() {
+  return REGIOS.map((r) => ({ params: { regio: r } }));
+}
+const { regio } = Astro.params;
+const naam = REGIO_NAAM[regio];
+const nu = vandaag();
+const gem = gemeentenInRegio(regio);
+const perProv = PROVINCIES.map((p) => ({ p, g: gem.filter((x) => x.provincie === p) })).filter((x) => x.g.length);
+const volgende = komende(nu, regio, 12);
+const eerste = volgende[0];
+const provTekst = { noord: "Groningen, Fryslân, Drenthe, Overijssel, Noord-Holland en het grootste deel van Flevoland", midden: "Zuid-Holland, Utrecht, Zeewolde en een groot deel van Gelderland", zuid: "Limburg, Zeeland, Noord-Brabant en het zuidoosten van Gelderland" }[regio];
+---
+<Base title={`Schoolvakanties regio ${naam}: alle data en gemeenten`} description={`Alle schoolvakanties voor regio ${naam} (${provTekst}). Volgende vakantie: ${eerste.naam.toLowerCase()} vanaf ${volledig(eerste.regios[regio].start)}. Met lijst van alle ${gem.length} gemeenten.`} canonical={`/regio/${regio}`} kruimels={[{ naam: "Regio's", url: "/regio/" }, { naam: `Regio ${naam}` }]}>
+  <h1>Schoolvakanties regio {naam}</h1>
+  <p class="intro">Regio {naam} bestaat uit {provTekst}. Hieronder staan alle vakanties voor deze regio en de {gem.length} gemeenten die erbij horen.</p>
+  <Aftellen vakanties={VAKANTIES} regio={regio} />
+
+  <h2>Komende vakanties in regio {naam}</h2>
+  <div class="tabelwrap"><table>
+    <thead><tr><th>Vakantie</th><th>Periode</th><th>Schooljaar</th></tr></thead>
+    <tbody>{volgende.map((v) => (
+      <tr class={v.regios[regio].start <= nu && v.regios[regio].eind >= nu ? "nu" : ""}>
+        <td><a href={`/${v.slug}`}><strong>{v.naam} {v.jaar}</strong></a>{!v.verplicht && <span class="muted klein"><br />adviesdata</span>}</td>
+        <td class="nw">{kort(v.regios[regio].start)} – {kort(v.regios[regio].eind)} {v.regios[regio].eind.slice(0, 4)}</td>
+        <td class="muted">{v.schooljaar}</td>
+      </tr>
+    ))}</tbody>
+  </table></div>
+
+  <h2>Gemeenten in regio {naam}</h2>
+  {perProv.map(({ p, g }) => (
+    <>
+      <h3>{p}</h3>
+      <ul class="chips">{g.map((x) => <li><a href={`/gemeente/${x.slug}`}>{x.naam}{x.opmerking ? " *" : ""}</a></li>)}</ul>
+    </>
+  ))}
+  {gem.some((x) => x.opmerking) && <p class="muted klein">* Deze gemeente is verdeeld over twee regio's. Op de pagina van de gemeente staat welk deel bij welke regio hoort.</p>}
+
+  <h2>Andere regio's</h2>
+  <ul class="chips">{REGIOS.filter((r) => r !== regio).map((r) => <li><a href={`/regio/${r}`}>Regio {REGIO_NAAM[r]}</a></li>)}</ul>
+  <p class="bron muted klein">Bron: Rijksoverheid, regio-indeling schoolvakanties en open data schoolvakanties (CC0).</p>
+</Base>

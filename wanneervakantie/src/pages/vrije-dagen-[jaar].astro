@@ -1,0 +1,54 @@
+---
+import Base from "../layouts/Base.astro";
+import { vrijPlannen } from "../lib/feestdagen.js";
+import { dagNaam, lang, kort } from "../lib/datum.js";
+import { KALENDERJAREN, vakantiesInJaar, REGIOS, REGIO_NAAM } from "../lib/vakanties.js";
+
+export function getStaticPaths() {
+  return KALENDERJAREN.map((j) => ({ params: { jaar: String(j) }, props: { jaar: j } }));
+}
+const { jaar } = Astro.props;
+const opties = vrijPlannen(jaar).sort((a, b) => a.van.localeCompare(b.van));
+const beste = [...opties].sort((a, b) => b.rendement - a.rendement || b.totaal - a.totaal).slice(0, 3);
+const mei = vakantiesInJaar(jaar).find((v) => v.type === "meivakantie");
+---
+<Base title={`Slim vrij nemen in ${jaar}: met weinig vakantiedagen lang vrij`} description={`Zo haal je het meeste uit je vakantiedagen in ${jaar}. Bijvoorbeeld: ${beste[0].nodig} vakantiedag${beste[0].nodig > 1 ? "en" : ""} voor ${beste[0].totaal} dagen vrij rond ${beste[0].naam}. Alle combinaties met feestdagen en brugdagen.`} canonical={`/vrije-dagen-${jaar}`} kruimels={[{ naam: `Slim vrij nemen ${jaar}` }]}>
+  <h1>Slim vrij nemen in {jaar}</h1>
+  <p class="intro">Met een paar vakantiedagen rond de feestdagen ben je veel langer vrij. Dit zijn de slimste combinaties voor {jaar}, uitgaande van een werkweek van maandag tot en met vrijdag.</p>
+
+  <h2>De beste deals van {jaar}</h2>
+  <ul class="tegels">
+    {beste.map((o) => (
+      <li><div class="deal kaartblok">
+        <strong>{o.naam}</strong>
+        <span class="groot">{o.nodig} {o.nodig === 1 ? "dag" : "dagen"} → {o.totaal} dagen vrij</span>
+        <span class="muted">{dagNaam(o.van)} {lang(o.van, false)} t/m {dagNaam(o.tot)} {lang(o.tot)}</span>
+      </div></li>
+    ))}
+  </ul>
+
+  <h2>Alle opties in {jaar}</h2>
+  <div class="tabelwrap"><table>
+    <thead><tr><th>Wanneer</th><th>Vakantiedagen → vrij</th></tr></thead>
+    <tbody>{opties.map((o) => (
+      <tr>
+        <td><strong>{o.naam}</strong><br /><span class="muted klein">{kort(o.van)} t/m {kort(o.tot)}{o.tot.slice(0, 4) !== String(jaar) ? ` ${o.tot.slice(0, 4)}` : ""}</span></td>
+        <td class="nw"><strong>{o.nodig}</strong> → {o.totaal} dagen</td>
+      </tr>
+    ))}</tbody>
+  </table></div>
+  <p class="muted klein">Goede Vrijdag en Bevrijdingsdag zijn hier als werkdag gerekend{jaar % 5 === 0 ? ", behalve Bevrijdingsdag in dit lustrumjaar" : ""}. Ben je volgens je cao vrij op die dagen, dan heb je nog minder vakantiedagen nodig.</p>
+
+  {mei && (<>
+    <h2>Met kinderen? Let op de schoolvakanties</h2>
+    <p>De meivakantie {jaar} is in heel Nederland van {lang(mei.regios.noord.start, false)} tot en met {lang(mei.regios.noord.eind)}. Rond die week is het druk en duurder op vakantieparken.</p>
+    <p><a href={`/schoolvakanties-${jaar}`}>Alle schoolvakanties {jaar} →</a></p>
+  </>)}
+
+  <h2>Andere jaren</h2>
+  <ul class="chips">{KALENDERJAREN.filter((j) => j !== jaar).map((j) => <li><a href={`/vrije-dagen-${j}`}>Slim vrij nemen {j}</a></li>)}<li><a href={`/feestdagen-${jaar}`}>Feestdagen {jaar}</a></li></ul>
+</Base>
+<style>
+  .deal { display: flex; flex-direction: column; gap: 4px; height: 100%; }
+  .deal .groot { font-family: var(--kop); font-size: 1.25rem; color: var(--accent-dark); }
+</style>

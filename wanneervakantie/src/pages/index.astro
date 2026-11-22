@@ -1,0 +1,68 @@
+---
+import Base from "../layouts/Base.astro";
+import Aftellen from "../components/Aftellen.astro";
+import VakantieTabel from "../components/VakantieTabel.astro";
+import GemeenteZoeker from "../components/GemeenteZoeker.astro";
+import { VAKANTIES, SCHOOLJAREN, KALENDERJAREN, komendeAlle, TYPE_VOLGORDE, TYPES, vanType, REGIOS, REGIO_NAAM } from "../lib/vakanties.js";
+import { vandaag, periode } from "../lib/datum.js";
+import { SITE } from "../lib/site.js";
+const nu = vandaag();
+const ditJaar = Number(nu.slice(0, 4));
+const volgende = komendeAlle(nu, 6);
+const sjNu = SCHOOLJAREN.find((s) => VAKANTIES.some((v) => v.schooljaar === s && v.eind >= nu)) ?? SCHOOLJAREN.at(-1);
+const jaren = KALENDERJAREN.filter((j) => j >= ditJaar);
+// Na de zomer verschuift de interesse naar volgend jaar
+const hoofdJaar = nu.slice(5, 7) >= "09" && KALENDERJAREN.includes(ditJaar + 1) ? ditJaar + 1 : ditJaar;
+const faq = [
+  { v: "Wanneer is de volgende schoolvakantie?", a: `De eerstvolgende schoolvakantie is de ${volgende[0].naam.toLowerCase()}: ${volgende[0].gelijk ? `${periode(volgende[0].regios.noord.start, volgende[0].regios.noord.eind)} in heel Nederland` : REGIOS.map((r) => `regio ${REGIO_NAAM[r]} ${periode(volgende[0].regios[r].start, volgende[0].regios[r].eind)}`).join(", ")}.` },
+  { v: "Welke regio's zijn er voor de schoolvakanties?", a: "Nederland heeft drie vakantieregio's: Noord, Midden en Zuid. Zo zijn niet alle gezinnen tegelijk op vakantie. Welke regio jij hebt, hangt af van de gemeente waar de school staat." },
+  { v: "Zijn de vakantiedata verplicht voor scholen?", a: "De zomer- en kerstvakantie liggen vast. Voor de herfst- en voorjaarsvakantie en de meivakantie geeft het ministerie van OCW adviesdata; scholen mogen daarvan afwijken. Check bij twijfel de schoolgids." },
+];
+const jsonLd = [
+  { "@context": "https://schema.org", "@type": "WebSite", name: SITE.domein, url: SITE.url + "/", inLanguage: "nl-NL" },
+  { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.v, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
+];
+---
+<Base title={`Schoolvakanties ${jaren[0]} en ${jaren[1]} per regio – wanneer is het vakantie?`} description={`Alle schoolvakanties ${sjNu} en verder voor regio Noord, Midden en Zuid. Met aftellen naar je volgende vakantie, feestdagen en de regio van jouw gemeente.`} canonical="/" jsonLd={jsonLd}>
+  <h1>Wanneer is het vakantie?</h1>
+  <p class="intro">Alle schoolvakanties voor regio Noord, Midden en Zuid, rechtstreeks uit de open data van de Rijksoverheid. Kies je regio en zie hoe lang het nog duurt.</p>
+  <Aftellen vakanties={VAKANTIES} />
+
+  <h2>De komende vakanties</h2>
+  <VakantieTabel vakanties={volgende} />
+  <p class="meer"><a href={`/schoolvakanties-${sjNu}`}>Alle schoolvakanties {sjNu} →</a></p>
+
+  <h2>Welke regio heeft mijn gemeente?</h2>
+  <GemeenteZoeker />
+  <ul class="chips">{REGIOS.map((r) => <li><a href={`/regio/${r}`}>Regio {REGIO_NAAM[r]}</a></li>)}</ul>
+
+  <h2>Per vakantie</h2>
+  <ul class="tegels">
+    {TYPE_VOLGORDE.map((t) => vanType(t).find((x) => x.eind >= nu) ?? vanType(t).at(-1)).sort((a, b) => a.start.localeCompare(b.start)).map((v) => {
+      return (
+        <li><a href={`/${v.slug}`}>
+          <strong>{v.info.emoji} {v.naam} {v.jaar}</strong>
+          <span class="muted">{v.gelijk ? periode(v.regios.noord.start, v.regios.noord.eind) : `${periode(v.start, v.eind)}, per regio verschillend`}</span>
+          <span class="verder">Data per regio →</span>
+        </a></li>
+      );
+    })}
+  </ul>
+
+  <h2>Per jaar</h2>
+  <ul class="chips">
+    {SCHOOLJAREN.filter((s) => VAKANTIES.some((v) => v.schooljaar === s && v.eind >= nu)).map((s) => <li><a href={`/schoolvakanties-${s}`}>Schooljaar {s}</a></li>)}
+    {jaren.map((j) => <li><a href={`/schoolvakanties-${j}`}>Schoolvakanties {j}</a></li>)}
+  </ul>
+
+  <h2>Vrije dagen en feestdagen</h2>
+  <ul class="tegels">
+    <li><a href={`/feestdagen-${hoofdJaar}`}><strong>Feestdagen {hoofdJaar}</strong><span class="muted">Pasen, Koningsdag, Hemelvaart, Pinksteren en Kerst op een rij.</span><span class="verder">Bekijk →</span></a></li>
+    <li><a href={`/vrije-dagen-${hoofdJaar}`}><strong>Slim vrij nemen {hoofdJaar}</strong><span class="muted">Met zo min mogelijk vakantiedagen zo lang mogelijk vrij.</span><span class="verder">Bekijk →</span></a></li>
+    <li><a href="/agenda/"><strong>Vakanties in je agenda</strong><span class="muted">Gratis agenda-abonnement per regio, werkt in Google, Apple en Outlook.</span><span class="verder">Instellen →</span></a></li>
+  </ul>
+
+  <h2>Veelgestelde vragen</h2>
+  {faq.map((f) => <details><summary>{f.v}</summary><p>{f.a}</p></details>)}
+  <p class="bron muted klein">Bron: <a href="https://www.rijksoverheid.nl/onderwerpen/schoolvakanties">Rijksoverheid</a>, open data (CC0). Automatisch bijgewerkt.</p>
+</Base>

@@ -1,0 +1,69 @@
+---
+// Jaarkalender met 12 maanden. Vakantiedagen kleuren per gekozen regio (keuze in de browser).
+import { VAKANTIES, REGIOS, REGIO_NAAM } from "../lib/vakanties.js";
+import { feestdagen } from "../lib/feestdagen.js";
+import { maandNaam } from "../lib/datum.js";
+const { jaar } = Astro.props;
+const fd = new Map(feestdagen(jaar).map((f) => [f.datum, f.naam]));
+const pad = (n) => String(n).padStart(2, "0");
+const maanden = Array.from({ length: 12 }, (_, m) => {
+  const dagenInMaand = new Date(Date.UTC(jaar, m + 1, 0)).getUTCDate();
+  const eersteWd = (new Date(Date.UTC(jaar, m, 1)).getUTCDay() + 6) % 7; // maandag = 0
+  const dagen = Array.from({ length: dagenInMaand }, (_, i) => {
+    const iso = `${jaar}-${pad(m + 1)}-${pad(i + 1)}`;
+    const regios = REGIOS.filter((r) => VAKANTIES.some((v) => v.regios[r].start <= iso && v.regios[r].eind >= iso));
+    return { dag: i + 1, iso, regios, feest: fd.get(iso) };
+  });
+  return { m, eersteWd, dagen };
+});
+---
+<div class="jk" data-jk>
+  <div class="kies" role="group" aria-label="Regio voor de kalender">
+    {REGIOS.map((r) => <button type="button" data-regio={r} class={`rk ${r}`}>{REGIO_NAAM[r]}</button>)}
+  </div>
+  <div class="maanden">
+    {maanden.map((mnd) => (
+      <section class="maand">
+        <h3>{maandNaam(mnd.m)}</h3>
+        <div class="grid">
+          {["ma", "di", "wo", "do", "vr", "za", "zo"].map((w) => <span class="wd">{w}</span>)}
+          {Array.from({ length: mnd.eersteWd }, () => <span />)}
+          {mnd.dagen.map((x) => (
+            <span class={["d", ...x.regios.map((r) => `v-${r}`), x.feest ? "fd" : ""].join(" ")} title={x.feest ?? undefined}>{x.dag}</span>
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+</div>
+<style>
+  .jk { margin: 10px 0; }
+  .kies { display: flex; gap: 8px; margin-bottom: 12px; }
+  .rk { font: inherit; font-weight: 600; font-size: .9rem; padding: 7px 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--card); cursor: pointer; }
+  .rk.actief.noord { background: var(--noord); border-color: var(--noord); color: #fff; }
+  .rk.actief.midden { background: var(--midden); border-color: var(--midden); color: #fff; }
+  .rk.actief.zuid { background: var(--zuid); border-color: var(--zuid); color: #fff; }
+  .maanden { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+  .maand { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px 12px; }
+  .maand h3 { margin: 0 0 6px; font-size: .95rem; text-transform: capitalize; }
+  .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; font-size: .78rem; text-align: center; font-variant-numeric: tabular-nums; }
+  .wd { color: var(--muted); font-size: .68rem; }
+  .d { padding: 3px 0; border-radius: 5px; }
+  .d.fd { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 2px; font-weight: 700; }
+  .jk.r-noord .v-noord { background: var(--noord); color: #fff; }
+  .jk.r-midden .v-midden { background: var(--midden); color: #fff; }
+  .jk.r-zuid .v-zuid { background: var(--zuid); color: #fff; }
+</style>
+<script>
+  document.querySelectorAll("[data-jk]").forEach((el) => {
+    let regio; try { regio = localStorage.getItem("regio"); } catch {}
+    const url = new URLSearchParams(location.search).get("regio");
+    regio = ["noord", "midden", "zuid"].includes(url) ? url : ["noord", "midden", "zuid"].includes(regio) ? regio : "midden";
+    const zet = (r) => {
+      regio = r; el.classList.remove("r-noord", "r-midden", "r-zuid"); el.classList.add(`r-${r}`);
+      el.querySelectorAll(".rk").forEach((b) => b.classList.toggle("actief", b.dataset.regio === r));
+    };
+    el.querySelectorAll(".rk").forEach((b) => b.addEventListener("click", () => { zet(b.dataset.regio); try { localStorage.setItem("regio", b.dataset.regio); } catch {} }));
+    zet(regio);
+  });
+</script>

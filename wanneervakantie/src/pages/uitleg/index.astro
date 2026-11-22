@@ -1,0 +1,12 @@
+---
+import Base from "../../layouts/Base.astro";
+const items = [
+  { url: "/uitleg/regios", t: "Waarom zijn er vakantieregio's?", d: "Hoe de indeling in Noord, Midden en Zuid werkt en wie die bepaalt." },
+  { url: "/uitleg/adviesdata", t: "Wat zijn adviesdata?", d: "Welke vakanties vastliggen en waar scholen van mogen afwijken." },
+  { url: "/uitleg/vrij-buiten-schoolvakantie", t: "Vrij vragen buiten de schoolvakantie", d: "Wanneer mag je kind extra vrij krijgen van school, en hoe vraag je dat aan?" },
+];
+---
+<Base title="Uitleg over schoolvakanties, regio's en verlof" description="Uitleg over de vakantieregio's, adviesdata en vrij vragen buiten de schoolvakantie." canonical="/uitleg/" kruimels={[{ naam: "Uitleg" }]}>
+  <h1>Uitleg</h1>
+  <ul class="tegels">{items.map((i) => <li><a href={i.url}><strong>{i.t}</strong><span class="muted">{i.d}</span><span class="verder">Lees verder →</span></a></li>)}</ul>
+</Base>

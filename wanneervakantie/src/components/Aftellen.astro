@@ -1,0 +1,68 @@
+---
+// Aftellen naar de eerstvolgende vakantie in de gekozen regio. Rekent in de browser, dus altijd actueel.
+// props: vakanties (lijst), type (optioneel: alleen dit type), titel (optioneel), regio (vaste regio, optioneel)
+import { REGIOS, REGIO_NAAM } from "../lib/vakanties.js";
+const { vakanties, regio: vasteRegio = null, compact = false } = Astro.props;
+const data = vakanties.map((v) => ({ n: v.naam, s: v.slug, r: Object.fromEntries(REGIOS.map((r) => [r, [v.regios[r].start, v.regios[r].eind]])) }));
+---
+<section class={`aftel kaartblok${compact ? " compact" : ""}`} data-vast={vasteRegio ?? ""}>
+  {!vasteRegio && (
+    <div class="kies" role="group" aria-label="Kies je regio">
+      <span class="muted klein">Jouw regio:</span>
+      {REGIOS.map((r) => <button type="button" data-regio={r} class={`rk ${r}`}>{REGIO_NAAM[r]}</button>)}
+      <a class="klein" href="/gemeente/">Welke regio ben ik?</a>
+    </div>
+  )}
+  <p class="groot" aria-live="polite"><span class="getal">…</span> <span class="tekst"></span></p>
+  <p class="sub muted"></p>
+  <script type="application/json" class="aftel-data" set:html={JSON.stringify(data)} />
+</section>
+<style>
+  .aftel { margin: 18px 0 8px; }
+  .kies { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .rk { font: inherit; font-weight: 600; font-size: .9rem; padding: 7px 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--card); cursor: pointer; color: var(--ink); }
+  .rk.actief.noord { background: var(--noord); border-color: var(--noord); color: #fff; }
+  .rk.actief.midden { background: var(--midden); border-color: var(--midden); color: #fff; }
+  .rk.actief.zuid { background: var(--zuid); border-color: var(--zuid); color: #fff; }
+  .groot { margin: 0; font-family: var(--kop); font-size: clamp(1.25rem, 4.2vw, 1.7rem); line-height: 1.2; }
+  .getal { color: var(--accent); font-size: 1.6em; }
+  .sub { margin: 6px 0 0; }
+  .compact .groot { font-size: 1.2rem; }
+</style>
+<script>
+  const DAG = 86400000;
+  const vandaag = () => { const n = new Date(); return Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()); };
+  const t = (iso) => Date.parse(iso + "T00:00:00Z");
+  const fmt = (iso) => new Date(t(iso)).toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
+  function lees() { try { return localStorage.getItem("regio"); } catch { return null; } }
+  function bewaar(r) { try { localStorage.setItem("regio", r); } catch {} }
+  document.querySelectorAll(".aftel").forEach((el) => {
+    const data = JSON.parse(el.querySelector(".aftel-data").textContent);
+    const vast = el.dataset.vast;
+    const url = new URLSearchParams(location.search).get("regio");
+    let regio = vast || (["noord", "midden", "zuid"].includes(url) ? url : null) || lees() || "midden";
+    const toon = () => {
+      el.querySelectorAll(".rk").forEach((b) => b.classList.toggle("actief", b.dataset.regio === regio));
+      const nu = vandaag();
+      const lijst = data.map((v) => ({ ...v, a: t(v.r[regio][0]), b: t(v.r[regio][1]) })).filter((v) => v.b >= nu).sort((x, y) => x.a - y.a);
+      const getal = el.querySelector(".getal"), tekst = el.querySelector(".tekst"), sub = el.querySelector(".sub");
+      const naam = regio[0].toUpperCase() + regio.slice(1);
+      if (!lijst.length) { getal.textContent = ""; tekst.textContent = "Er zijn nog geen nieuwe vakantiedata bekend."; sub.textContent = ""; return; }
+      const v = lijst[0];
+      if (v.a <= nu) {
+        const rest = Math.round((v.b - nu) / DAG);
+        getal.textContent = "🎉";
+        tekst.textContent = `Het is ${v.n.toLowerCase()} in regio ${naam}!`;
+        sub.textContent = rest === 0 ? "Vandaag is de laatste dag." : `Nog ${rest} ${rest === 1 ? "dag" : "dagen"}, tot en met ${fmt(v.r[regio][1])}.`;
+      } else {
+        const n = Math.round((v.a - nu) / DAG);
+        getal.textContent = String(n);
+        tekst.textContent = `${n === 1 ? "dag" : "dagen"} tot de ${v.n.toLowerCase()} in regio ${naam}`;
+        const weken = Math.floor(n / 7);
+        sub.textContent = `Begint ${fmt(v.r[regio][0])}${n >= 14 ? ` (ruim ${weken} weken)` : ""}.`;
+      }
+    };
+    el.querySelectorAll(".rk").forEach((b) => b.addEventListener("click", () => { regio = b.dataset.regio; bewaar(regio); toon(); }));
+    toon();
+  });
+</script>
