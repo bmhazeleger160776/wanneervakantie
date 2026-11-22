@@ -1,5 +1,6 @@
 ---
 import { SITE } from "../lib/site.js";
+import Cookiebanner from "../components/Cookiebanner.astro";
 import { KALENDERJAREN } from "../lib/vakanties.js";
 import { vandaag } from "../lib/datum.js";
 const { title, description, canonical, jsonLd = [], kruimels = [] } = Astro.props;
@@ -33,7 +34,6 @@ const alleLd = [...jsonLd, ...breadcrumbLd];
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    {SITE.umamiId && <script is:inline defer src="https://cloud.umami.is/script.js" data-website-id={SITE.umamiId} data-domains={SITE.domein}></script>}
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -166,7 +166,9 @@ const alleLd = [...jsonLd, ...breadcrumbLd];
         <li><a href="/widget/">Gratis widget</a></li>
         <li><a href="/over">Over deze site</a></li>
         <li><a href="/privacy">Privacy</a></li>
+        {SITE.gaId && <li><button type="button" class="knopje" data-cookie-instellingen>Cookie-instellingen</button></li>}
       </ul>
     </div></footer>
+    <Cookiebanner />
   </body>
 </html>

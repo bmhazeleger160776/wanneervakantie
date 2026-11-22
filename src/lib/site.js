@@ -7,6 +7,6 @@ export const SITE = {
   url: "https://wanneervakantie.nl",
   maker: "Matthijs Hazeleger",
   mail: "matthijshazeleger@live.nl",
-  // Umami: vul hier de website-id in zodra de site in Umami is aangemaakt. Leeg = geen statistieken.
-  umamiId: "",
+  // Google Analytics 4: vul hier de meet-id in (begint met G-). Leeg = geen statistieken en geen cookiebanner.
+  gaId: "",
 };

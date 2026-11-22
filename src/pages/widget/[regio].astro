@@ -14,7 +14,6 @@ const data = lijst.map((v) => ({ n: v.naam, s: v.slug, a: v.regios[regio].start,
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex" />
   <title>Schoolvakanties regio {REGIO_NAAM[regio]}</title>
-  {SITE.umamiId && <script is:inline defer src="https://cloud.umami.is/script.js" data-website-id={SITE.umamiId} data-domains={SITE.domein}></script>}
   <style>
     body { margin: 0; font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #1d1a17; }
     .w { border: 1px solid #ece4dc; border-radius: 12px; padding: 12px 14px; background: #fff; }

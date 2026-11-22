@@ -1,0 +1,99 @@
+---
+// Google Analytics 4 met Consent Mode v2 en een eenvoudige cookiebanner.
+// - Standaard is alles geweigerd; gtag.js wordt pas geladen na "Accepteren".
+// - De keuze staat in localStorage ("cookiekeuze" = "ja" of "nee").
+// - Via de link "Cookie-instellingen" (data-cookie-instellingen) kan de bezoeker de keuze aanpassen.
+// - Klikken op elementen met data-umami-event worden als GA4-gebeurtenis meegestuurd.
+import { SITE } from "../lib/site.js";
+const gaId = SITE.gaId;
+---
+{gaId && (
+  <>
+    <div id="cookiebanner" class="cookiebanner" role="dialog" aria-live="polite" aria-label="Cookiekeuze" hidden>
+      <p>Mag deze site cookies van Google Analytics gebruiken om bezoekersstatistieken bij te houden? Daarmee zien we welke pagina's nuttig zijn. <a href="/privacy">Meer uitleg</a></p>
+      <div class="cookieknoppen">
+        <button type="button" class="knop" data-cookie="ja">Accepteren</button>
+        <button type="button" class="knop" data-cookie="nee">Weigeren</button>
+      </div>
+    </div>
+    <script is:inline define:vars={{ gaId }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      window.gtag = gtag;
+      gtag("consent", "default", { ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied", analytics_storage: "denied" });
+
+      var SLEUTEL = "cookiekeuze";
+      var geladen = false;
+      function lees() { try { return localStorage.getItem(SLEUTEL); } catch (e) { return null; } }
+      function bewaar(k) { try { localStorage.setItem(SLEUTEL, k); } catch (e) {} }
+      function banner(tonen) { var b = document.getElementById("cookiebanner"); if (b) b.hidden = !tonen; }
+
+      function laadGA() {
+        if (geladen) return;
+        geladen = true;
+        gtag("consent", "update", { analytics_storage: "granted" });
+        var s = document.createElement("script");
+        s.async = true;
+        s.src = "https://www.googletagmanager.com/gtag/js?id=" + gaId;
+        document.head.appendChild(s);
+        gtag("js", new Date());
+        gtag("config", gaId, { anonymize_ip: true });
+      }
+
+      function wisGaCookies() {
+        var host = location.hostname;
+        var domeinen = ["", host, "." + host, "." + host.replace(/^www\./, "")];
+        document.cookie.split(";").forEach(function (c) {
+          var naam = c.split("=")[0].trim();
+          if (naam.indexOf("_ga") !== 0) return;
+          domeinen.forEach(function (d) {
+            document.cookie = naam + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/" + (d ? "; domain=" + d : "");
+          });
+        });
+      }
+
+      function kies(k) {
+        var was = lees();
+        bewaar(k);
+        banner(false);
+        if (k === "ja") { laadGA(); return; }
+        gtag("consent", "update", { analytics_storage: "denied" });
+        wisGaCookies();
+        if (was === "ja" && geladen) location.reload();
+      }
+
+      document.addEventListener("click", function (e) {
+        var t = e.target.closest ? e.target : null;
+        if (!t) return;
+        var keuze = t.closest("[data-cookie]");
+        if (keuze) { kies(keuze.getAttribute("data-cookie")); return; }
+        if (t.closest("[data-cookie-instellingen]")) { e.preventDefault(); banner(true); return; }
+        var ev = t.closest("[data-umami-event]");
+        if (ev && geladen) {
+          var params = {};
+          Array.prototype.forEach.call(ev.attributes, function (a) {
+            if (a.name.indexOf("data-umami-event-") === 0) params[a.name.slice(17)] = a.value;
+          });
+          gtag("event", ev.getAttribute("data-umami-event").replace(/-/g, "_"), params);
+        }
+      });
+
+      function start() {
+        var k = lees();
+        if (k === "ja") laadGA();
+        else if (k !== "nee") banner(true);
+      }
+      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+      else start();
+    </script>
+  </>
+)}
+<style is:global>
+  .cookiebanner { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 50; max-width: 560px; margin: 0 auto; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 12px 32px rgba(29,26,23,.14); padding: 16px 18px; font-size: .95rem; }
+  .cookiebanner[hidden] { display: none; }
+  .cookiebanner p { margin: 0 0 12px; }
+  .cookieknoppen { display: flex; gap: 10px; flex-wrap: wrap; }
+  .cookieknoppen .knop { flex: 1 1 140px; padding: 10px 16px; }
+  .knopje { background: none; border: 0; padding: 0; font: inherit; color: var(--ink); font-weight: 500; cursor: pointer; }
+  .knopje:hover { color: var(--accent); }
+</style>
