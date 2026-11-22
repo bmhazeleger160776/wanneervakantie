@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import Reistip from "../components/Reistip.astro";
 import VakantieTabel from "../components/VakantieTabel.astro";
 import Aftellen from "../components/Aftellen.astro";
 import GemeenteZoeker from "../components/GemeenteZoeker.astro";
@@ -68,6 +69,8 @@ const jsonLd = [{ "@context": "https://schema.org", "@type": "FAQPage", mainEnti
       <p><a href={`/feestdagen-${kalJaar}`}>Alle feestdagen {kalJaar}</a> · <a href={`/vrije-dagen-${kalJaar}`}>Slim vrij nemen in {kalJaar}</a></p>
     </>
   )}
+
+  <Reistip type="overzicht" kop="Vakantie boeken?" />
 
   <h2>Welke regio heb ik?</h2>
   <GemeenteZoeker label="Zoek je gemeente" />

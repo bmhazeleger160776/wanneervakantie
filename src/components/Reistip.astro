@@ -1,5 +1,5 @@
 ---
-// Reisblok met affiliatelinks. Toont niets zolang er geen partners zijn ingesteld in src/lib/partners.js.
+// Reisblok met affiliatelinks. Toont niets zolang er geen partner met een ingevulde url staat in src/lib/partners.js.
 import { partnersVoor } from "../lib/partners.js";
 const { type, kop = "Op vakantie in deze periode?" } = Astro.props;
 const lijst = partnersVoor(type);
@@ -9,12 +9,12 @@ const lijst = partnersVoor(type);
     <h2>{kop}</h2>
     <ul class="tegels">
       {lijst.map((p) => (
-        <li><a href={p.url} rel="sponsored noopener" target="_blank" data-umami-event="partner-klik" data-umami-event-partner={p.naam}>
+        <li><a href={p.url} rel="sponsored nofollow noopener" target="_blank" data-umami-event="partner-klik" data-umami-event-partner={p.naam}>
           <strong>{p.naam}</strong><span class="muted">{p.tekst}</span><span class="verder">Bekijk aanbod →</span>
         </a></li>
       ))}
     </ul>
-    <p class="muted klein">Gesponsorde links: als je via deze links boekt, krijgen wij een kleine vergoeding. Jij betaalt niets extra.</p>
+    <p class="muted klein">Gesponsorde links: als je via deze links boekt, krijg ik een kleine vergoeding. Jij betaalt niets extra. <a href="/over#verdienmodel">Meer uitleg</a></p>
   </aside>
 )}
 <style>.reistip { margin-top: 32px; } .reistip h2 { margin-top: 0; }</style>

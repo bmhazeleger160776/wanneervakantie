@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import Reistip from "../components/Reistip.astro";
 import { vrijPlannen } from "../lib/feestdagen.js";
 import { dagNaam, lang, kort } from "../lib/datum.js";
 import { KALENDERJAREN, vakantiesInJaar, REGIOS, REGIO_NAAM } from "../lib/vakanties.js";
@@ -44,6 +45,8 @@ const mei = vakantiesInJaar(jaar).find((v) => v.type === "meivakantie");
     <p>De meivakantie {jaar} is in heel Nederland van {lang(mei.regios.noord.start, false)} tot en met {lang(mei.regios.noord.eind)}. Rond die week is het druk en duurder op vakantieparken.</p>
     <p><a href={`/schoolvakanties-${jaar}`}>Alle schoolvakanties {jaar} →</a></p>
   </>)}
+
+  <Reistip type="vrije-dagen" kop="Een lang weekend weg?" />
 
   <h2>Andere jaren</h2>
   <ul class="chips">{KALENDERJAREN.filter((j) => j !== jaar).map((j) => <li><a href={`/vrije-dagen-${j}`}>Slim vrij nemen {j}</a></li>)}<li><a href={`/feestdagen-${jaar}`}>Feestdagen {jaar}</a></li></ul>
