@@ -8,5 +8,5 @@ export const SITE = {
   maker: "Matthijs Hazeleger",
   mail: "matthijshazeleger@live.nl",
   // Google Analytics 4: vul hier de meet-id in (begint met G-). Leeg = geen statistieken en geen cookiebanner.
-  gaId: "",
+  gaId: "G-FH500128S4",
 };
