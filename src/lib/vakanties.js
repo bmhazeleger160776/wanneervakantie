@@ -7,7 +7,8 @@ const data = lees("schoolvakanties.json");
 const gemData = lees("gemeenten.json");
 
 export const BRON = data.bron;
-export const OPGEHAALD = data.opgehaald;
+export const OPGEHAALD = data.opgehaald; // laatste controle bij de Rijksoverheid (elke nacht)
+export const GEWIJZIGD = data.gewijzigd ?? data.opgehaald; // laatste keer dat de vakantiedata echt veranderde
 export const REGIOS = ["noord", "midden", "zuid"];
 export const REGIO_NAAM = { noord: "Noord", midden: "Midden", zuid: "Zuid" };
 

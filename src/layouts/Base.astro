@@ -3,7 +3,17 @@ import { SITE } from "../lib/site.js";
 import Cookiebanner from "../components/Cookiebanner.astro";
 import { KALENDERJAREN } from "../lib/vakanties.js";
 import { vandaag } from "../lib/datum.js";
-const { title, description, canonical, jsonLd = [], kruimels = [] } = Astro.props;
+import { GEWIJZIGD } from "../lib/vakanties.js";
+const { title, description: beschrijving, canonical, jsonLd = [], kruimels = [], gewijzigd } = Astro.props;
+// Meta description maximaal 160 tekens: hele zinnen houden, anders netjes afbreken op een woordgrens
+function kort160(t) {
+  if (!t || t.length <= 160) return t;
+  const zinnen = t.match(/[^.!?]+[.!?]+(\s|$)/g) || [t];
+  let uit = "";
+  for (const z of zinnen) { if ((uit + z).trim().length > 160) break; uit += z; }
+  return uit.trim() || t.slice(0, 157).replace(/\s+\S*$/, "") + "…";
+}
+const description = kort160(beschrijving);
 const site = SITE.url;
 const url = canonical ? site + canonical : undefined;
 const nu = vandaag();
@@ -14,7 +24,18 @@ const schooljaarNu = nu.slice(5, 7) >= "08" ? `${ditJaar}-${ditJaar + 1}` : `${d
 const breadcrumbLd = kruimels.length
   ? [{ "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ naam: "Home", url: "/" }, ...kruimels].map((k, i) => ({ "@type": "ListItem", position: i + 1, name: k.naam, ...(k.url ? { item: site + k.url } : {}) })) }]
   : [];
-const alleLd = [...jsonLd, ...breadcrumbLd];
+// Datum van de laatste inhoudelijke wijziging: pagina's met vakantiedata geven gewijzigd={true} mee
+const datumGewijzigd = gewijzigd ? [GEWIJZIGD, SITE.bijgewerkt].sort().at(-1) : SITE.bijgewerkt;
+const maker = { "@type": "Person", "@id": `${site}/#maker`, name: SITE.maker, url: `${site}/over` };
+const webPageLd = url
+  ? [{
+      "@context": "https://schema.org", "@type": "WebPage", "@id": `${url}#webpage`, url, name: title, description, inLanguage: "nl-NL",
+      isPartOf: { "@type": "WebSite", "@id": `${site}/#website`, name: SITE.domein, url: `${site}/` },
+      dateModified: datumGewijzigd, author: maker, publisher: maker,
+      ...(gewijzigd ? { isBasedOn: { "@type": "Dataset", name: "Schoolvakanties (open data)", url: "https://opendata.rijksoverheid.nl/v1/infotypes/schoolholidays", creator: { "@type": "GovernmentOrganization", name: "Rijksoverheid", url: "https://www.rijksoverheid.nl" } } } : {}),
+    }]
+  : [];
+const alleLd = [...webPageLd, ...jsonLd, ...breadcrumbLd];
 ---
 <!doctype html>
 <html lang="nl">

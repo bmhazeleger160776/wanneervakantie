@@ -1,0 +1,7 @@
+---
+// Bronvermelding met zichtbare controledatum (versheid telt voor Google en AI-zoekmachines)
+import { OPGEHAALD } from "../lib/vakanties.js";
+import { lang } from "../lib/datum.js";
+const { tekst = "regio-indeling en open data schoolvakanties" } = Astro.props;
+---
+<p class="bron muted klein">Bron: <a href="https://www.rijksoverheid.nl/onderwerpen/schoolvakanties">Rijksoverheid</a>, {tekst} (CC0). Laatst gecontroleerd: <time datetime={OPGEHAALD}>{lang(OPGEHAALD)}</time>. De site controleert de data elke nacht.</p>

@@ -1,11 +1,13 @@
 ---
 import Base from "../layouts/Base.astro";
+import Bron from "../components/Bron.astro";
 import Reistip from "../components/Reistip.astro";
 import VakantieTabel from "../components/VakantieTabel.astro";
 import Aftellen from "../components/Aftellen.astro";
 import GemeenteZoeker from "../components/GemeenteZoeker.astro";
 import Jaarkalender from "../components/Jaarkalender.astro";
-import { SCHOOLJAREN, KALENDERJAREN, vakantiesInSchooljaar, vakantiesInJaar, REGIOS, REGIO_NAAM, VAKANTIES } from "../lib/vakanties.js";
+import { SCHOOLJAREN, KALENDERJAREN, vakantiesInSchooljaar, vakantiesInJaar, REGIOS, REGIO_NAAM, VAKANTIES, BRON, GEWIJZIGD } from "../lib/vakanties.js";
+import { SITE } from "../lib/site.js";
 import { periode, volledig, vandaag, kort } from "../lib/datum.js";
 import { feestdagen } from "../lib/feestdagen.js";
 
@@ -32,16 +34,36 @@ const ookZien = isSJ ? [Number(waarde.slice(0, 4)), Number(waarde.slice(5))].fil
 const titel = isSJ ? `Schoolvakanties ${waarde}: alle data per regio` : `Schoolvakanties ${waarde}: alle data per regio (Noord, Midden, Zuid)`;
 const kd = (x) => kort(x).slice(3); // "17 jul"
 const desc = isSJ
-  ? `Schoolvakanties ${waarde} per regio.${zomer ? ` Zomervakantie: ${REGIOS.map((r) => `${REGIO_NAAM[r]} ${kd(zomer.regios[r].start)}–${kd(zomer.regios[r].eind)}`).join(", ")}.` : ""} Met herfst-, kerst-, voorjaars- en meivakantie.`
+  ? `Schoolvakanties ${waarde}.${zomer ? ` Zomer: ${REGIOS.map((r) => `${REGIO_NAAM[r]} ${kd(zomer.regios[r].start)}–${kd(zomer.regios[r].eind)}`).join(", ")}.` : ""} Plus herfst-, kerst-, voorjaars- en meivakantie.`
   : `Alle schoolvakanties ${waarde} per regio: voorjaars-, mei-, zomer-, herfst- en kerstvakantie. Met feestdagen ${waarde} en een jaarkalender.`;
 const faq = [
   zomer && { v: `Wanneer is de zomervakantie ${zomer.jaar}?`, a: REGIOS.map((r) => `Regio ${REGIO_NAAM[r]}: ${periode(zomer.regios[r].start, zomer.regios[r].eind)}`).join(". ") + "." },
   { v: `Welke regio begint als eerste met de zomervakantie?`, a: zomer ? `In ${zomer.jaar} begint regio ${REGIO_NAAM[REGIOS.find((r) => zomer.regios[r].start === zomer.start)]} als eerste, op ${volledig(zomer.start)}. De regio's wisselen elk jaar van volgorde.` : "De regio's wisselen elk jaar van volgorde." },
   { v: "Waar vind ik de vakantiedata van mijn school?", a: "De zomer- en kerstvakantie liggen vast. Voor herfst-, voorjaars- en meivakantie geeft het ministerie adviesdata; scholen mogen afwijken. De precieze data staan in de schoolgids of op de website van de school." },
 ].filter(Boolean);
-const jsonLd = [{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.v, acceptedAnswer: { "@type": "Answer", text: f.a } })) }];
+// Dataset-markering: maakt de tabel vindbaar in Google Dataset Search en duidelijk als bron voor AI
+const dsStart = lijst.map((v) => v.start).sort()[0];
+const dsEind = lijst.map((v) => v.eind).sort().at(-1);
+const datasetLd = lijst.length ? {
+  "@context": "https://schema.org", "@type": "Dataset",
+  name: `Schoolvakanties ${waarde} per regio (Noord, Midden, Zuid)`,
+  description: `Begin- en einddatum van alle schoolvakanties in ${label} voor de drie vakantieregio's in Nederland: ${lijst.map((v) => v.naam.toLowerCase()).join(", ")}. Gebaseerd op de open data van de Rijksoverheid; voor herfst-, voorjaars- en meivakantie zijn het adviesdata.`,
+  url: `${SITE.url}/schoolvakanties-${waarde}`,
+  inLanguage: "nl-NL",
+  keywords: ["schoolvakanties", `schoolvakanties ${waarde}`, "vakantieregio", "Noord", "Midden", "Zuid", "Nederland"],
+  license: "https://creativecommons.org/publicdomain/zero/1.0/",
+  isAccessibleForFree: true,
+  creator: { "@type": "GovernmentOrganization", name: "Rijksoverheid", url: "https://www.rijksoverheid.nl" },
+  publisher: { "@type": "Person", "@id": `${SITE.url}/#maker`, name: SITE.maker, url: `${SITE.url}/over` },
+  isBasedOn: BRON,
+  spatialCoverage: { "@type": "Place", name: "Nederland" },
+  temporalCoverage: `${dsStart}/${dsEind}`,
+  dateModified: GEWIJZIGD,
+  distribution: REGIOS.map((r) => ({ "@type": "DataDownload", name: `Agenda schoolvakanties regio ${REGIO_NAAM[r]}`, encodingFormat: "text/calendar", contentUrl: `${SITE.url}/agenda/schoolvakanties-${r}.ics` })),
+} : null;
+const jsonLd = [{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.v, acceptedAnswer: { "@type": "Answer", text: f.a } })) }, datasetLd].filter(Boolean);
 ---
-<Base title={titel} description={desc} canonical={`/schoolvakanties-${waarde}`} jsonLd={jsonLd} kruimels={[{ naam: `Schoolvakanties ${waarde}` }]}>
+<Base gewijzigd title={titel} description={desc} canonical={`/schoolvakanties-${waarde}`} jsonLd={jsonLd} kruimels={[{ naam: `Schoolvakanties ${waarde}` }]}>
   <h1>Schoolvakanties {waarde}</h1>
   <p class="intro">{isSJ
     ? <>Alle vakanties van schooljaar {waarde} voor regio Noord, Midden en Zuid. De zomer- en kerstvakantie liggen vast; de andere vakanties zijn adviesdata.</>
@@ -84,5 +106,5 @@ const jsonLd = [{ "@context": "https://schema.org", "@type": "FAQPage", mainEnti
     {volgende && <li><a href={`/schoolvakanties-${volgende}`}>{isSJ ? "Schooljaar " : "Schoolvakanties "}{volgende} →</a></li>}
     {ookZien.map((o) => <li><a href={o.url}>{o.t}</a></li>)}
   </ul>
-  <p class="bron muted klein">Bron: Rijksoverheid, open data schoolvakanties (CC0).</p>
+  <Bron />
 </Base>

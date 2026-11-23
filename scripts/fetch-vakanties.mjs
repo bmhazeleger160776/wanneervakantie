@@ -63,5 +63,10 @@ const schooljaren = [...perJaar.values()]
   .filter((s) => Number(s.schooljaar.slice(5)) >= jaarNu - 1) // oude jaren laten vallen
   .sort((a, b) => a.schooljaar.localeCompare(b.schooljaar));
 
-fs.writeFileSync(PAD, JSON.stringify({ bron: BRON, licentie: "CC0 1.0", opgehaald: new Date().toISOString().slice(0, 10), schooljaren }, null, 1) + "\n");
+const vandaag = new Date().toISOString().slice(0, 10);
+// "gewijzigd" schuift alleen op als de vakantiedata zelf verandert (voor lastmod, dateModified en IndexNow)
+const veranderd = JSON.stringify(schooljaren) !== JSON.stringify(bestaand.schooljaren);
+const gewijzigd = veranderd || !bestaand.gewijzigd ? vandaag : bestaand.gewijzigd;
+fs.writeFileSync(PAD, JSON.stringify({ bron: BRON, licentie: "CC0 1.0", opgehaald: vandaag, gewijzigd, schooljaren }, null, 1) + "\n");
+if (veranderd) console.log("De vakantiedata is veranderd.");
 console.log(`Schoolvakanties bijgewerkt: ${schooljaren.map((s) => s.schooljaar).join(", ")}`);

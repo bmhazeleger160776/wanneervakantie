@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import Bron from "../components/Bron.astro";
 import Aftellen from "../components/Aftellen.astro";
 import Reistip from "../components/Reistip.astro";
 import GemeenteZoeker from "../components/GemeenteZoeker.astro";
@@ -47,11 +48,16 @@ const faq = [
 const jsonLd = [
   { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.v, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
 ];
+// Meta description: kort en compleet (onder 160 tekens), met de data per regio
+const kd = (x) => kort(x).slice(3); // "17 jul"
+const beschrijving = v.gelijk
+  ? `${v.naam} ${v.jaar}: in heel Nederland van ${volledig(v.regios.noord.start)} t/m ${volledig(v.regios.noord.eind)}. Met aftellen en weeknummers.`
+  : `${v.naam} ${v.jaar}: ${REGIOS.map((r) => `${REGIO_NAAM[r]} ${kd(v.regios[r].start)}–${kd(v.regios[r].eind)}`).join(", ")}. Met aftellen, weeknummers en wat je moet weten.`;
 const titel = v.gelijk
   ? `${v.naam} ${v.jaar}: ${periode(v.regios.noord.start, v.regios.noord.eind)}`
   : `${v.naam} ${v.jaar} per regio: Noord, Midden en Zuid`;
 ---
-<Base title={titel} description={`${lead} Met aftellen, weeknummers${v.gelijk ? "" : ", data per regio"} en wat je moet weten.`} canonical={`/${v.slug}`} jsonLd={jsonLd} kruimels={[{ naam: `Schoolvakanties ${v.schooljaar}`, url: `/schoolvakanties-${v.schooljaar}` }, { naam: `${v.naam} ${v.jaar}` }]}>
+<Base gewijzigd title={titel} description={beschrijving} canonical={`/${v.slug}`} jsonLd={jsonLd} kruimels={[{ naam: `Schoolvakanties ${v.schooljaar}`, url: `/schoolvakanties-${v.schooljaar}` }, { naam: `${v.naam} ${v.jaar}` }]}>
   <h1>{v.info.emoji} {v.naam} {v.jaar}</h1>
   <p class="intro">{lead}</p>
   {!voorbij && <Aftellen vakanties={[v]} compact />}
@@ -118,5 +124,5 @@ const titel = v.gelijk
   </>)}
   <h2>Andere vakanties in schooljaar {v.schooljaar}</h2>
   <ul class="chips">{zelfdeJaar.map((x) => <li><a href={`/${x.slug}`}>{x.naam} {x.jaar}</a></li>)}</ul>
-  <p class="bron muted klein">Bron: Rijksoverheid, open data schoolvakanties (CC0).</p>
+  <Bron />
 </Base>

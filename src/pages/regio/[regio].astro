@@ -1,5 +1,6 @@
 ---
 import Base from "../../layouts/Base.astro";
+import Bron from "../../components/Bron.astro";
 import Aftellen from "../../components/Aftellen.astro";
 import { REGIOS, REGIO_NAAM, VAKANTIES, gemeentenInRegio, PROVINCIES, komende } from "../../lib/vakanties.js";
 import { kort, periode, vandaag, volledig } from "../../lib/datum.js";
@@ -16,7 +17,7 @@ const volgende = komende(nu, regio, 12);
 const eerste = volgende[0];
 const provTekst = { noord: "Groningen, Fryslân, Drenthe, Overijssel, Noord-Holland en het grootste deel van Flevoland", midden: "Zuid-Holland, Utrecht, Zeewolde en een groot deel van Gelderland", zuid: "Limburg, Zeeland, Noord-Brabant en het zuidoosten van Gelderland" }[regio];
 ---
-<Base title={`Schoolvakanties regio ${naam}: alle data en gemeenten`} description={`Alle schoolvakanties voor regio ${naam} (${provTekst}). Volgende vakantie: ${eerste.naam.toLowerCase()} vanaf ${volledig(eerste.regios[regio].start)}. Met lijst van alle ${gem.length} gemeenten.`} canonical={`/regio/${regio}`} kruimels={[{ naam: "Regio's", url: "/regio/" }, { naam: `Regio ${naam}` }]}>
+<Base gewijzigd title={`Schoolvakanties regio ${naam}: alle data en gemeenten`} description={`Alle schoolvakanties voor regio ${naam}. Volgende vakantie: ${eerste.naam.toLowerCase()} vanaf ${volledig(eerste.regios[regio].start)}. Met alle ${gem.length} gemeenten in regio ${naam}.`} canonical={`/regio/${regio}`} kruimels={[{ naam: "Regio's", url: "/regio/" }, { naam: `Regio ${naam}` }]}>
   <h1>Schoolvakanties regio {naam}</h1>
   <p class="intro">Regio {naam} bestaat uit {provTekst}. Hieronder staan alle vakanties voor deze regio en de {gem.length} gemeenten die erbij horen.</p>
   <Aftellen vakanties={VAKANTIES} regio={regio} />
@@ -44,5 +45,5 @@ const provTekst = { noord: "Groningen, Fryslân, Drenthe, Overijssel, Noord-Holl
 
   <h2>Andere regio's</h2>
   <ul class="chips">{REGIOS.filter((r) => r !== regio).map((r) => <li><a href={`/regio/${r}`}>Regio {REGIO_NAAM[r]}</a></li>)}</ul>
-  <p class="bron muted klein">Bron: Rijksoverheid, regio-indeling schoolvakanties en open data schoolvakanties (CC0).</p>
+  <Bron />
 </Base>

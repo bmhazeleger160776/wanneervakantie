@@ -1,5 +1,6 @@
 ---
 import Base from "../../layouts/Base.astro";
+import Bron from "../../components/Bron.astro";
 import Aftellen from "../../components/Aftellen.astro";
 import { GEMEENTEN, REGIO_NAAM, VAKANTIES, komende, gemeentenInRegio } from "../../lib/vakanties.js";
 import { kort, volledig, vandaag, periode } from "../../lib/datum.js";
@@ -21,7 +22,7 @@ const faq = [
 ].filter(Boolean);
 const jsonLd = [{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.v, acceptedAnswer: { "@type": "Answer", text: f.a } })) }];
 ---
-<Base title={`Schoolvakanties ${g.naam} – regio ${naam}`} description={`${g.naam} valt in regio ${naam}. ${zomer ? `Zomervakantie ${zomer.jaar}: ${periode(zomer.regios[r].start, zomer.regios[r].eind)}. ` : ""}Alle schoolvakanties voor ${g.naam} op een rij, met aftellen.`} canonical={`/gemeente/${g.slug}`} jsonLd={jsonLd} kruimels={[{ naam: "Gemeenten", url: "/gemeente/" }, { naam: g.naam }]}>
+<Base gewijzigd title={`Schoolvakanties ${g.naam} – regio ${naam}`} description={`${g.naam} valt in regio ${naam}. ${zomer ? `Zomervakantie ${zomer.jaar}: ${periode(zomer.regios[r].start, zomer.regios[r].eind)}. ` : ""}Alle schoolvakanties voor ${g.naam} op een rij, met aftellen.`} canonical={`/gemeente/${g.slug}`} jsonLd={jsonLd} kruimels={[{ naam: "Gemeenten", url: "/gemeente/" }, { naam: g.naam }]}>
   <h1>Schoolvakanties {g.naam}</h1>
   <p class="intro">{g.naam} ({g.provincie}) valt in <a href={`/regio/${r}`} class={`regio ${r}`} style="text-decoration:none">regio {naam}</a>.{g.opmerking && <> {g.opmerking}</>}</p>
   <Aftellen vakanties={VAKANTIES} regio={r} />
@@ -46,4 +47,5 @@ const jsonLd = [{ "@context": "https://schema.org", "@type": "FAQPage", mainEnti
     <ul class="chips">{buren.map((x) => <li><a href={`/gemeente/${x.slug}`}>{x.naam}</a></li>)}</ul>
   </>)}
   <p class="meer"><a href={`/regio/${r}`}>Alle gemeenten in regio {naam} →</a></p>
+  <Bron />
 </Base>

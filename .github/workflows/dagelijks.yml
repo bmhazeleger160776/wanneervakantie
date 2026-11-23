@@ -18,6 +18,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      nieuw: ${{ steps.data.outputs.nieuw }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,6 +27,9 @@ jobs:
       - run: npm ci
       - name: Schoolvakanties ophalen bij de Rijksoverheid
         run: npm run fetch-data
+      - name: Is de vakantiedata vandaag veranderd?
+        id: data
+        run: echo "nieuw=$(node -p "require('./data/schoolvakanties.json').gewijzigd === new Date().toISOString().slice(0, 10)")" >> "$GITHUB_OUTPUT"
       - name: Nieuwe data bewaren
         run: |
           git config user.name "vakantie-bot"
@@ -47,3 +52,15 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+  indexnow:
+    # Zoekmachines (Bing e.a.) direct laten weten dat er iets veranderd is:
+    # bij elke push of handmatige run, en 's nachts alleen als de vakantiedata echt veranderde.
+    needs: [build, deploy]
+    if: github.event_name != 'schedule' || needs.build.outputs.nieuw == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: URL's melden bij IndexNow
+        run: node scripts/indexnow.mjs

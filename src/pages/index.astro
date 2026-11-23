@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import Bron from "../components/Bron.astro";
 import Aftellen from "../components/Aftellen.astro";
 import VakantieTabel from "../components/VakantieTabel.astro";
 import GemeenteZoeker from "../components/GemeenteZoeker.astro";
@@ -19,11 +20,11 @@ const faq = [
   { v: "Zijn de vakantiedata verplicht voor scholen?", a: "De zomer- en kerstvakantie liggen vast. Voor de herfst- en voorjaarsvakantie en de meivakantie geeft het ministerie van OCW adviesdata; scholen mogen daarvan afwijken. Check bij twijfel de schoolgids." },
 ];
 const jsonLd = [
-  { "@context": "https://schema.org", "@type": "WebSite", name: SITE.domein, url: SITE.url + "/", inLanguage: "nl-NL" },
+  { "@context": "https://schema.org", "@type": "WebSite", "@id": `${SITE.url}/#website`, name: SITE.domein, url: SITE.url + "/", inLanguage: "nl-NL", description: "Schoolvakanties per regio (Noord, Midden, Zuid), feestdagen en vrije dagen in Nederland, op basis van open data van de Rijksoverheid.", publisher: { "@type": "Person", "@id": `${SITE.url}/#maker`, name: SITE.maker, url: `${SITE.url}/over` } },
   { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.v, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
 ];
 ---
-<Base title={`Schoolvakanties ${jaren[0]} en ${jaren[1]} per regio – wanneer is het vakantie?`} description={`Alle schoolvakanties ${sjNu} en verder voor regio Noord, Midden en Zuid. Met aftellen naar je volgende vakantie, feestdagen en de regio van jouw gemeente.`} canonical="/" jsonLd={jsonLd}>
+<Base gewijzigd title={`Schoolvakanties ${jaren[0]} en ${jaren[1]} per regio – wanneer is het vakantie?`} description={`Alle schoolvakanties ${sjNu} en verder voor regio Noord, Midden en Zuid. Met aftellen naar je volgende vakantie, feestdagen en de regio van jouw gemeente.`} canonical="/" jsonLd={jsonLd}>
   <h1>Wanneer is het vakantie?</h1>
   <p class="intro">Alle schoolvakanties voor regio Noord, Midden en Zuid, rechtstreeks uit de open data van de Rijksoverheid. Kies je regio en zie hoe lang het nog duurt.</p>
   <Aftellen vakanties={VAKANTIES} />
@@ -64,5 +65,5 @@ const jsonLd = [
 
   <h2>Veelgestelde vragen</h2>
   {faq.map((f) => <details><summary>{f.v}</summary><p>{f.a}</p></details>)}
-  <p class="bron muted klein">Bron: <a href="https://www.rijksoverheid.nl/onderwerpen/schoolvakanties">Rijksoverheid</a>, open data (CC0). Automatisch bijgewerkt.</p>
+  <Bron />
 </Base>
