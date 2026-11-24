@@ -17,7 +17,7 @@ const VAKANTIES = ["zomervakantie", "meivakantie", "herfstvakantie", "kerstvakan
 
 export const PARTNERS = [
   // ---- TradeTracker ----
-  { naam: "Landal GreenParks", netwerk: "TradeTracker", tekst: "Vakantieparken in Nederland, BelgiÃ« en Duitsland", url: "PLAK_LANDAL", types: [...VAKANTIES, "overzicht", "vrije-dagen"] },
+  { naam: "Landal GreenParks", netwerk: "TradeTracker", tekst: "Vakantieparken in Nederland, België en Duitsland", url: "PLAK_LANDAL", types: [...VAKANTIES, "overzicht", "vrije-dagen"] },
   { naam: "EuroParcs", netwerk: "TradeTracker", tekst: "Vakantieparken aan het water en in de natuur", url: "PLAK_EUROPARCS", types: [...VAKANTIES, "overzicht", "vrije-dagen"] },
   { naam: "Roompot", netwerk: "TradeTracker", tekst: "Bungalows en vakantieparken aan de kust", url: "PLAK_ROOMPOT", types: [...VAKANTIES, "overzicht", "vrije-dagen"] },
   { naam: "TUI", netwerk: "TradeTracker", tekst: "Zonvakanties en vliegvakanties in de schoolvakantie", url: "PLAK_TUI", types: ["zomervakantie", "meivakantie", "herfstvakantie", "kerstvakantie", "voorjaarsvakantie", "overzicht"] },
