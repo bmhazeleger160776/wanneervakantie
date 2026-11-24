@@ -1,4 +1,4 @@
-// Affiliatelinks voor het reisblok (component Reistip.astro).
+﻿// Affiliatelinks voor het reisblok (component Reistip.astro).
 //
 // Zo werkt het:
 // - Een partner verschijnt pas op de site zodra "url" is ingevuld. Lege url = onzichtbaar.
@@ -17,12 +17,12 @@ const VAKANTIES = ["zomervakantie", "meivakantie", "herfstvakantie", "kerstvakan
 
 export const PARTNERS = [
   // ---- TradeTracker ----
-  { naam: "Landal GreenParks", netwerk: "TradeTracker", tekst: "Vakantieparken in Nederland, België en Duitsland", url: "PLAK_LANDAL", types: [...VAKANTIES, "overzicht", "vrije-dagen"] },
+  { naam: "Landal GreenParks", netwerk: "TradeTracker", tekst: "Vakantieparken in Nederland, BelgiÃ« en Duitsland", url: "PLAK_LANDAL", types: [...VAKANTIES, "overzicht", "vrije-dagen"] },
   { naam: "EuroParcs", netwerk: "TradeTracker", tekst: "Vakantieparken aan het water en in de natuur", url: "PLAK_EUROPARCS", types: [...VAKANTIES, "overzicht", "vrije-dagen"] },
   { naam: "Roompot", netwerk: "TradeTracker", tekst: "Bungalows en vakantieparken aan de kust", url: "PLAK_ROOMPOT", types: [...VAKANTIES, "overzicht", "vrije-dagen"] },
   { naam: "TUI", netwerk: "TradeTracker", tekst: "Zonvakanties en vliegvakanties in de schoolvakantie", url: "PLAK_TUI", types: ["zomervakantie", "meivakantie", "herfstvakantie", "kerstvakantie", "voorjaarsvakantie", "overzicht"] },
   // ---- Daisycon ----
-  { naam: "Bungalows.nl", netwerk: "Daisycon", tekst: "Vakantiehuizen en bungalows vergelijken", url: "PLAK_BUNGALOWS", types: [...VAKANTIES, "overzicht", "vrije-dagen"] },
+  { naam: "Bungalow.Net", netwerk: "Daisycon", tekst: "Vakantiehuizen en bungalows vergelijken", url: "https://lt45.net/c/?si=11126&li=1495538&wi=450909&ws=", types: [...VAKANTIES, "overzicht", "vrije-dagen"] },
   { naam: "Campings.com", netwerk: "Daisycon", tekst: "Campings met zwembad, ideaal voor de zomervakantie", url: "PLAK_CAMPINGS", types: ["zomervakantie", "meivakantie", "overzicht"] },
   { naam: "De Vakantiediscounter", netwerk: "Daisycon", tekst: "Voordelige vakanties en last minutes", url: "PLAK_VAKANTIEDISCOUNTER", types: [...VAKANTIES, "overzicht"] },
 ];
