@@ -23,8 +23,12 @@ export const PARTNERS = [
   { naam: "TUI", netwerk: "TradeTracker", tekst: "Zonvakanties en vliegvakanties in de schoolvakantie", url: "PLAK_TUI", types: ["zomervakantie", "meivakantie", "herfstvakantie", "kerstvakantie", "voorjaarsvakantie", "overzicht"] },
   // ---- Daisycon ----
   { naam: "Bungalow.Net", netwerk: "Daisycon", tekst: "Vakantiehuizen en bungalows vergelijken", url: "https://lt45.net/c/?si=11126&li=1495538&wi=450909&ws=", types: [...VAKANTIES, "overzicht", "vrije-dagen"] },
+  { naam: "Solmar", netwerk: "Daisycon", tekst: "Zonvakanties en all-inclusive reizen", url: "https://ds1.nl/c/?si=8300&li=1382752&wi=450909&ws=&dl=", types: [...VAKANTIES, "overzicht"] },
+  { naam: "Tix Hotels", netwerk: "Daisycon", tekst: "Hotels voor een weekendje weg of de vakantie", url: "https://lt45.net/c/?si=16215&li=1696230&wi=450909&ws=&dl=", types: [...VAKANTIES, "overzicht", "vrije-dagen"] },
   { naam: "Campings.com", netwerk: "Daisycon", tekst: "Campings met zwembad, ideaal voor de zomervakantie", url: "PLAK_CAMPINGS", types: ["zomervakantie", "meivakantie", "overzicht"] },
   { naam: "De Vakantiediscounter", netwerk: "Daisycon", tekst: "Voordelige vakanties en last minutes", url: "PLAK_VAKANTIEDISCOUNTER", types: [...VAKANTIES, "overzicht"] },
+  { naam: "Vliegtickets.nl", netwerk: "Daisycon", tekst: "Vliegtickets voor de schoolvakantie", url: "https://lt45.net/c/?si=20493&li=1869650&wi=450909&ws=&dl=", types: [...VAKANTIES, "overzicht"] },
+  { naam: "Tix.nl", netwerk: "Daisycon", tekst: "Vliegtickets en vakanties vergelijken", url: "https://lt45.net/c/?si=11172&li=1495780&wi=450909&ws=&dl=", types: [...VAKANTIES, "overzicht"] },
 ];
 
 const MAX = 3;
